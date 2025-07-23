@@ -96,7 +96,7 @@ const News = () => {
                                 <tr key={news.id}>
                                     <td className="py-4 px-4 border-b border-gray-200">
                                         <Image
-                                            src={`${process.env.NEXT_PUBLIC_API_URL}/${news.image}`.replace(/\\/g, '/')}
+                                            src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/${news.image.replace(/^.*[\\/]/, '')}`}
                                             alt={`News ${news.id}`}
                                             width={100}
                                             height={100}
