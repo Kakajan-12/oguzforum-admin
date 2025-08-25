@@ -21,7 +21,6 @@ const EditPartner = () => {
     const [imageFile, setImageFile] = useState<File | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
-    const [imagePath, setImagePath] = useState<string>('');
 
     useEffect(() => {
         const fetchData = async () => {
@@ -38,8 +37,8 @@ const EditPartner = () => {
                     : response.data;
 
                 if (partnerData && partnerData.id) {
+                    // правильно обновляем состояние
                     setData(partnerData);
-                    setImagePath(partnerData.image || '');
                 } else {
                     throw new Error("Партнёр не найден");
                 }
@@ -55,37 +54,29 @@ const EditPartner = () => {
         if (id) fetchData();
     }, [id]);
 
+
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
         try {
             const token = localStorage.getItem('auth_token');
-            let imageToSend = imagePath;
+            const formData = new FormData();
 
             if (imageFile) {
-                const formData = new FormData();
-                formData.append('image', imageFile);
-
-                const uploadResponse = await axios.post(
-                    `${process.env.NEXT_PUBLIC_API_URL}/api/sliders/upload`,
-                    formData,
-                    {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                            'Content-Type': 'multipart/form-data',
-                        },
-                    }
-                );
-
-                imageToSend = uploadResponse.data.filename;
+                formData.append('logo', imageFile); // новый файл
+            } else if (data.logo) {
+                formData.append('logo', data.logo); // старое значение
+            } else {
+                throw new Error('Нет логотипа для отправки');
             }
 
             await axios.put(
                 `${process.env.NEXT_PUBLIC_API_URL}/api/partners/${id}`,
-                { ...data, logo: imageToSend },
+                formData,
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,
+                        'Content-Type': 'multipart/form-data',
                     },
                 }
             );
@@ -96,6 +87,8 @@ const EditPartner = () => {
             setError('Ошибка при сохранении');
         }
     };
+
+
 
     if (loading) return <p className="p-4">Загрузка...</p>;
     if (error) return <p className="p-4 text-red-600">{error}</p>;

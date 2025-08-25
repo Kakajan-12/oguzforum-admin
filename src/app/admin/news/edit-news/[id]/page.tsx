@@ -16,7 +16,6 @@ const EditNews = () => {
     const [imageFile, setImageFile] = useState<File | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
-    const [imagePath, setImagePath] = useState('');
     const [categories, setCategories] = useState<{ id: number, cat_tk: string, cat_en: string, cat_ru: string }[]>([]);
 
     useEffect(() => {
@@ -56,7 +55,6 @@ const EditNews = () => {
                         date: formattedDate,
                     });
 
-                    setImagePath(rawData.image);
                     setLoading(false);
                 } else {
                     throw new Error("Данные не найдены для этой новости");
@@ -79,32 +77,29 @@ const EditNews = () => {
         e.preventDefault();
         try {
             const token = localStorage.getItem('auth_token');
-            let imageToSend = imagePath;
 
-            // Если выбрано новое изображение
+            const formData = new FormData();
+            formData.append("tk", data.tk);
+            formData.append("en", data.en);
+            formData.append("ru", data.ru);
+            formData.append("text_tk", data.text_tk);
+            formData.append("text_en", data.text_en);
+            formData.append("text_ru", data.text_ru);
+            formData.append("news_cat_id", String(data.news_cat_id));
+            formData.append("date", data.date);
+
+            // если новое изображение выбрано → добавляем
             if (imageFile) {
-                const formData = new FormData();
-                formData.append('image', imageFile);
-
-                const uploadResponse = await axios.post(
-                    `${process.env.NEXT_PUBLIC_API_URL}/api/sliders/upload`,
-                    formData,
-                    {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                            'Content-Type': 'multipart/form-data',
-                        },
-                    }
-                );
-
-                imageToSend = uploadResponse.data.filename;
+                formData.append("image", imageFile);
             }
 
-            await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/api/news/${id}`,
-                { ...data, image: imageToSend },
+            await axios.put(
+                `${process.env.NEXT_PUBLIC_API_URL}/api/news/${id}`,
+                formData,
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,
+                        "Content-Type": "multipart/form-data",
                     },
                 }
             );
@@ -112,9 +107,10 @@ const EditNews = () => {
             router.push(`/admin/news/view-news/${id}`);
         } catch (err) {
             console.error(err);
-            setError('Ошибка при сохранении');
+            setError("Ошибка при сохранении");
         }
     };
+
 
     if (loading) return <p>Загрузка...</p>;
     if (error) return <p>{error}</p>;

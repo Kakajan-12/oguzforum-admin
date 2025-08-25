@@ -11,15 +11,13 @@ const EditGallery = () => {
     const { id } = useParams();
     const router = useRouter();
 
-    const [data, setData] = useState({ image: '', project_id: '' });
+    const [data, setData] = useState<{ image: string; project_id: string }>({ image: '', project_id: '' });
     const [imageFile, setImageFile] = useState<File | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string>('');
-    const [imagePath, setImagePath] = useState<string>('');
     const [projects, setProjects] = useState<{ id: number, tk: string, en: string, ru: string }[]>([]);
     const [previewURL, setPreviewURL] = useState<string | null>(null);
 
-    // Загрузка проектов
     useEffect(() => {
         const fetchProjects = async () => {
             try {
@@ -36,28 +34,26 @@ const EditGallery = () => {
         fetchProjects();
     }, []);
 
-    // Загрузка данных галереи
     useEffect(() => {
         const fetchData = async () => {
             try {
                 const token = localStorage.getItem('auth_token');
                 const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/gallery/${id}`, {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
+                    headers: { Authorization: `Bearer ${token}` },
                 });
 
                 if (response.data && response.data.id) {
-                    const rawData = response.data;
-                    setData(rawData);
-                    setImagePath(rawData.image);
-                    setLoading(false);
+                    setData({
+                        image: response.data.image || '',
+                        project_id: String(response.data.project_id || '')
+                    });
                 } else {
                     throw new Error('Данные не найдены');
                 }
             } catch (err) {
                 console.error('Ошибка при загрузке данных:', err);
                 setError('Ошибка при загрузке');
+            } finally {
                 setLoading(false);
             }
         };
@@ -65,40 +61,27 @@ const EditGallery = () => {
         if (id) fetchData();
     }, [id]);
 
-    // Обработка отправки формы
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         try {
             const token = localStorage.getItem('auth_token');
-            let imageToSend = imagePath;
+            const formData = new FormData();
 
+            // если выбрали новый файл → прикрепляем
             if (imageFile) {
-                const formData = new FormData();
                 formData.append('image', imageFile);
-
-                const uploadResponse = await axios.post(
-                    `${process.env.NEXT_PUBLIC_API_URL}/api/sliders/upload`,
-                    formData,
-                    {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                            'Content-Type': 'multipart/form-data',
-                        },
-                    }
-                );
-
-                imageToSend = uploadResponse.data.filename;
+            } else {
+                formData.append('image', data.image); // оставляем старый путь
             }
 
-            await axios.put(
-                `${process.env.NEXT_PUBLIC_API_URL}/api/gallery/${id}`,
-                { ...data, image: imageToSend },
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
-            );
+            formData.append('project_id', data.project_id);
+
+            await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/api/gallery/${id}`, formData, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
 
             router.push(`/admin/gallery/view-gallery/${id}`);
         } catch (err) {
@@ -108,7 +91,7 @@ const EditGallery = () => {
     };
 
     if (loading) return <p>Загрузка...</p>;
-    if (error) return <p>{error}</p>;
+    if (error) return <p className="text-red-600">{error}</p>;
 
     return (
         <div className="flex bg-gray-200 min-h-screen">
@@ -118,7 +101,8 @@ const EditGallery = () => {
                 <div className="mt-8">
                     <h1 className="text-2xl font-bold mb-4">Edit Gallery</h1>
                     <form onSubmit={handleSubmit} className="space-y-6 bg-white p-6 rounded shadow">
-                        {data.image && (
+
+                        {data.image && !previewURL && (
                             <div className="mb-4">
                                 <label className="block font-semibold mb-2">Current image:</label>
                                 <Image
@@ -130,24 +114,24 @@ const EditGallery = () => {
                                 />
                             </div>
                         )}
+
                         <div className="mb-4 flex space-x-4">
                             <div className="w-full">
-                                <div className="mb-4">
-                                    <label htmlFor="image" className="block font-semibold mb-2">New image:</label>
-                                    <input
-                                        type="file"
-                                        id="image"
-                                        accept="image/*"
-                                        onChange={(e) => {
-                                            if (e.target.files && e.target.files[0]) {
-                                                setImageFile(e.target.files[0]);
-                                                setPreviewURL(URL.createObjectURL(e.target.files[0]));
-                                            }
-                                        }}
-                                        className="border border-gray-300 rounded p-2 w-full"
-                                    />
-                                </div>
+                                <label htmlFor="image" className="block font-semibold mb-2">New image:</label>
+                                <input
+                                    type="file"
+                                    id="image"
+                                    accept="image/*"
+                                    onChange={(e) => {
+                                        if (e.target.files && e.target.files[0]) {
+                                            setImageFile(e.target.files[0]);
+                                            setPreviewURL(URL.createObjectURL(e.target.files[0]));
+                                        }
+                                    }}
+                                    className="border border-gray-300 rounded p-2 w-full"
+                                />
                             </div>
+
                             <div className="w-full">
                                 <label className="block text-gray-700 font-semibold mb-2">
                                     Projects:
@@ -156,7 +140,7 @@ const EditGallery = () => {
                                     id="project_id"
                                     name="project_id"
                                     value={String(data.project_id)}
-                                    onChange={(e) => setData((prev) => ({ ...prev, project_id: e.target.value }))}
+                                    onChange={(e) => setData(prev => ({ ...prev, project_id: e.target.value }))}
                                     required
                                     className="border border-gray-300 rounded p-2 w-full focus:border-blue-500 focus:ring focus:ring-blue-200 transition duration-150"
                                 >

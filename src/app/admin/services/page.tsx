@@ -62,7 +62,7 @@ const Services = () => {
                 <TokenTimer />
                 <div className="mt-8">
                     <div className="w-full flex justify-between">
-                        <h2 className="text-2xl font-bold mb-4">News</h2>
+                        <h2 className="text-2xl font-bold mb-4">Services</h2>
                         <Link
                             href="/admin/services/add-service"
                             className="bg text-white h-fit py-2 px-8 rounded-md cursor-pointer flex items-center"

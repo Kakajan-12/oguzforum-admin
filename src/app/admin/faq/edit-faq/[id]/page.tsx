@@ -74,21 +74,16 @@ const EditFaq = () => {
     if (loading) return <p>Загрузка...</p>;
     if (error) return <p className="text-red-600">{error}</p>;
 
-    const renderEditorBlock = (lang: string, questionField: string, answerField: string) => (
+    const renderEditorBlock = (lang: string, questionField: keyof typeof data, answerField: keyof typeof data) => (
         <div className="tab-content bg-base-100 border-base-300 p-6">
             <div className="mb-4">
                 <label className="block font-semibold mb-2">Question ({lang}):</label>
-                <Editor
-                    key={`${questionField}-editor`}
-                    apiKey="z9ht7p5r21591bc3n06i1yc7nmokdeorgawiso8vkpodbvp0"
-                    value={data[questionField as keyof typeof data]}
-                    onEditorChange={(content) => handleChange(questionField, content)}
-                    init={{
-                        height: 200,
-                        menubar: false,
-                        plugins: 'link image code lists',
-                        toolbar: 'undo redo | bold italic | alignleft aligncenter alignright | bullist numlist outdent indent | code',
-                    }}
+                <input
+                    value={data[questionField]}
+                    onChange={(e) => handleChange(questionField, e.target.value)}
+                    type="text"
+                    required
+                    className="border border-gray-300 rounded p-2 w-full"
                 />
             </div>
             <div className="mb-4">
@@ -96,7 +91,7 @@ const EditFaq = () => {
                 <Editor
                     key={`${answerField}-editor`}
                     apiKey="z9ht7p5r21591bc3n06i1yc7nmokdeorgawiso8vkpodbvp0"
-                    value={data[answerField as keyof typeof data]}
+                    value={data[answerField]}
                     onEditorChange={(content) => handleChange(answerField, content)}
                     init={{
                         height: 200,

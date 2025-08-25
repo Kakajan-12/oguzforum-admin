@@ -23,19 +23,18 @@ const EditSlider = () => {
     const [imageFile, setImageFile] = useState<File | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string>('');
-    const [imagePath, setImagePath] = useState<string>('');
 
     useEffect(() => {
         const fetchSlider = async () => {
             try {
                 const token = localStorage.getItem('auth_token');
-                const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/sliders/${id}`, {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
-                setSlider(response.data[0]);
-                setImagePath(response.data[0].image); // Store current image path
+                const response = await axios.get(
+                    `${process.env.NEXT_PUBLIC_API_URL}/api/sliders/${id}`,
+                    {
+                        headers: { Authorization: `Bearer ${token}` },
+                    }
+                );
+                setSlider(response.data[0]); // сервер возвращает массив
                 setLoading(false);
             } catch (err) {
                 console.error(err);
@@ -53,37 +52,32 @@ const EditSlider = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setError(''); // Clear any previous errors
+        setError('');
 
         try {
             const token = localStorage.getItem('auth_token');
-            let imageToSend = imagePath; // Default to current image path
-
-            if (imageFile) {
-                // Upload new image if file is selected
-                const formData = new FormData();
-                formData.append('image', imageFile);
-
-                const uploadResponse = await axios.post(
-                    `${process.env.NEXT_PUBLIC_API_URL}/api/sliders/upload`,
-                    formData,
-                    {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                            'Content-Type': 'multipart/form-data',
-                        },
-                    }
-                );
-                imageToSend = uploadResponse.data.filename; // Get the new image filename
+            if (!token) {
+                setError('No auth token found');
+                return;
             }
 
-            // Update slider with form data and possibly the new image
+            const formData = new FormData();
+            formData.append('tk', slider.tk);
+            formData.append('en', slider.en);
+            formData.append('ru', slider.ru);
+
+            // если новое изображение выбрано
+            if (imageFile) {
+                formData.append('image', imageFile);
+            }
+
             await axios.put(
                 `${process.env.NEXT_PUBLIC_API_URL}/api/sliders/${id}`,
-                { ...slider, image: imageToSend },
+                formData,
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,
+                        'Content-Type': 'multipart/form-data',
                     },
                 }
             );
@@ -110,7 +104,7 @@ const EditSlider = () => {
                             <div className="mb-4">
                                 <label className="block font-semibold mb-2">Current Image:</label>
                                 <Image
-                                    src={`${process.env.NEXT_PUBLIC_API_URL}/${slider.image.replace('\\', '/')}`}
+                                    src={`${process.env.NEXT_PUBLIC_API_URL}/${slider.image.replace(/\\/g, '/')}`}
                                     alt="Slider"
                                     width={200}
                                     height={200}
@@ -181,7 +175,7 @@ const EditSlider = () => {
 
                         <button
                             type="submit"
-                            className="bg text-white px-4 py-2 rounded flex items-center hover:bg-blue-700"
+                            className="bg-blue-600 text-white px-4 py-2 rounded flex items-center hover:bg-blue-700"
                         >
                             <DocumentIcon className="w-5 h-5 mr-2" />
                             Save

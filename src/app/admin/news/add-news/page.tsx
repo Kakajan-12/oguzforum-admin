@@ -72,7 +72,7 @@ const AddNews = () => {
         formData.append('news_cat_id', news_cat_id ?? '');
 
         try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/news-create`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/news`, {
                 method: 'POST',
                 headers: {
                     Authorization: `Bearer ${token}`,

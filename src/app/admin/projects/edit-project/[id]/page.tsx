@@ -94,42 +94,47 @@ const EditProject = () => {
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-
         try {
             const token = localStorage.getItem('auth_token');
-            let imageToSend = imagePath;
 
+            const formData = new FormData();
+            formData.append("tk", data.tk);
+            formData.append("en", data.en);
+            formData.append("ru", data.ru);
+            formData.append("text_tk", data.text_tk);
+            formData.append("text_en", data.text_en);
+            formData.append("text_ru", data.text_ru);
+            formData.append("date", data.date);
+            formData.append("end_date", data.end_date);
+            formData.append("link", data.link);
+            formData.append("location_id", String(data.location_id));
+
+            // если новое изображение выбрано → добавляем
             if (imageFile) {
-                const formData = new FormData();
-                formData.append('image', imageFile);
-
-                const uploadResponse = await axios.post(
-                    `${process.env.NEXT_PUBLIC_API_URL}/api/sliders/upload`,
-                    formData,
-                    {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                            'Content-Type': 'multipart/form-data',
-                        },
-                    }
-                );
-
-                imageToSend = uploadResponse.data.filename;
+                formData.append("image", imageFile);
+            } else {
+                // если не выбрано → оставляем старое значение (например путь)
+                formData.append("image", imagePath);
             }
 
-            await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/api/projects/${id}`,
-                {...data, image: imageToSend},
+            await axios.put(
+                `${process.env.NEXT_PUBLIC_API_URL}/api/projects/${id}`,
+                formData,
                 {
-                    headers: {Authorization: `Bearer ${token}`},
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        "Content-Type": "multipart/form-data",
+                    },
                 }
             );
 
             router.push(`/admin/projects/view-project/${id}`);
         } catch (err) {
             console.error(err);
-            setError('Ошибка при сохранении');
+            setError("Ошибка при сохранении");
         }
     };
+
 
     if (loading) return <p>Загрузка...</p>;
     if (error) return <p>{error}</p>;

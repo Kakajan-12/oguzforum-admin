@@ -35,7 +35,7 @@ const AddSlider = () => {
         formData.append('ru', ru ?? '');
 
         try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/slider-create`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/sliders`, {
                 method: 'POST',
                 headers: {
                     Authorization: `Bearer ${token}`,

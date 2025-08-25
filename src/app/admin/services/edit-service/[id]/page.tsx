@@ -8,7 +8,6 @@ import TokenTimer from "@/Components/TokenTimer";
 import { DocumentIcon } from "@heroicons/react/16/solid";
 import Image from "next/image";
 
-// Define the type for the data state
 interface ServiceData {
     tk: string;
     text_tk: string;
@@ -35,7 +34,6 @@ const EditService = () => {
     const [imageFile, setImageFile] = useState<File | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
-    const [imagePath, setImagePath] = useState('');
 
     useEffect(() => {
         const fetchData = async () => {
@@ -61,8 +59,6 @@ const EditService = () => {
                         text_ru: rawData.text_ru,
                         image: rawData.image,
                     });
-
-                    setImagePath(rawData.image);
                     setLoading(false);
                 } else {
                     throw new Error("Данные не найдены для этой новости");
@@ -86,28 +82,26 @@ const EditService = () => {
         e.preventDefault();
         try {
             const token = localStorage.getItem('auth_token');
-            let imageToSend = imagePath;
+            if (!token) {
+                setError('No auth token found');
+                return;
+            }
 
+            const formData = new FormData();
+            formData.append('tk', data.tk);
+            formData.append('text_tk', data.text_tk);
+            formData.append('en', data.en);
+            formData.append('text_en', data.text_en);
+            formData.append('ru', data.ru);
+            formData.append('text_ru', data.text_ru);
+
+            // если новое изображение выбрано
             if (imageFile) {
-                const formData = new FormData();
                 formData.append('image', imageFile);
-
-                const uploadResponse = await axios.post(
-                    `${process.env.NEXT_PUBLIC_API_URL}/api/sliders/upload`,
-                    formData,
-                    {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                            'Content-Type': 'multipart/form-data',
-                        },
-                    }
-                );
-
-                imageToSend = uploadResponse.data.filename;
             }
 
             await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/api/services/${id}`,
-                { ...data, image: imageToSend },
+                formData,
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,
