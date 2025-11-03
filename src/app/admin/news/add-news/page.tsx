@@ -115,7 +115,6 @@ const AddNews = () => {
         menubar: false,
         plugins: ['lists link image editimage table code'],
         toolbar: 'undo redo | styleselect | bold italic | alignleft aligncenter alignright | bullist numlist outdent indent | link image code',
-        content_css: '//www.tiny.cloud/css/codepen.min.css',
     };
 
     return (
