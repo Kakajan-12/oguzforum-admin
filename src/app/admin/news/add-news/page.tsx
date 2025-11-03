@@ -103,6 +103,14 @@ const AddNews = () => {
     };
 
     const editorConfig = {
+        skin: "oxide",
+        content_css: "default",
+        content_style: `
+          body {
+            background-color: #ffffff;
+            color: #171717;
+          }
+        `,
         height: 200,
         menubar: false,
         plugins: ['lists link image editimage table code'],
