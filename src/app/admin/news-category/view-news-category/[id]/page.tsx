@@ -11,7 +11,6 @@ import {
     TrashIcon,
 } from '@heroicons/react/16/solid';
 
-// ✅ Добавлен тип данных
 type NewsCategory = {
     id: string;
     cat_tk: string;

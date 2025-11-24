@@ -7,7 +7,6 @@ import TokenTimer from "@/Components/TokenTimer";
 import Link from "next/link";
 import { EyeIcon, PlusCircleIcon } from "@heroicons/react/16/solid";
 
-// Define the type for each news item
 type NewsItem = {
     id: string;
     cat_tk: string;
@@ -16,7 +15,7 @@ type NewsItem = {
 };
 
 const NewsCategory = () => {
-    const [news, setNews] = useState<NewsItem[]>([]); // Specify the type for news state
+    const [news, setNews] = useState<NewsItem[]>([]);
     const [error, setError] = useState<string | null>(null);
     const router = useRouter();
 

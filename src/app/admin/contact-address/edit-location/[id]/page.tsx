@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import axios from 'axios';
-import { Editor } from '@tinymce/tinymce-react';
 import Sidebar from "@/Components/Sidebar";
 import TokenTimer from "@/Components/TokenTimer";
 import { DocumentIcon } from "@heroicons/react/16/solid";
@@ -46,12 +45,6 @@ const EditLocationAddress = () => {
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setData((prev) => ({ ...prev, [name]: value }));
-    };
-
-
-
-    const handleEditorChange = (name: keyof typeof data, content: string) => {
-        setData((prev) => ({ ...prev, [name]: content }));
     };
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -115,16 +108,13 @@ const EditLocationAddress = () => {
                                 </div>
                                 <div className="mb-4">
                                     <label className="block font-semibold mb-2">Address Location:</label>
-                                    <Editor
-                                        apiKey="z9ht7p5r21591bc3n06i1yc7nmokdeorgawiso8vkpodbvp0"
+                                    <input
+                                        name="location_tk"
                                         value={data.location_tk}
-                                        onEditorChange={(content) => handleEditorChange('location_tk', content)}
-                                        init={{
-                                            height: 200,
-                                            menubar: false,
-                                            plugins: 'link image code lists',
-                                            toolbar: 'undo redo | bold italic | alignleft aligncenter alignright | bullist numlist outdent indent | code',
-                                        }}
+                                        onChange={handleChange}
+                                        type="text"
+                                        required
+                                        className="border border-gray-300 rounded p-2 w-full"
                                     />
                                 </div>
                             </div>
@@ -144,16 +134,13 @@ const EditLocationAddress = () => {
                                 </div>
                                 <div className="mb-4">
                                     <label className="block font-semibold mb-2">Address Location:</label>
-                                    <Editor
-                                        apiKey="z9ht7p5r21591bc3n06i1yc7nmokdeorgawiso8vkpodbvp0"
+                                    <input
+                                        name="location_en"
                                         value={data.location_en}
-                                        onEditorChange={(content) => handleEditorChange('location_en', content)}
-                                        init={{
-                                            height: 200,
-                                            menubar: false,
-                                            plugins: 'link image code lists',
-                                            toolbar: 'undo redo | bold italic | alignleft aligncenter alignright | bullist numlist outdent indent | code',
-                                        }}
+                                        onChange={handleChange}
+                                        type="text"
+                                        required
+                                        className="border border-gray-300 rounded p-2 w-full"
                                     />
                                 </div>
                             </div>
@@ -173,16 +160,13 @@ const EditLocationAddress = () => {
                                 </div>
                                 <div className="mb-4">
                                     <label className="block font-semibold mb-2">Address Location:</label>
-                                    <Editor
-                                        apiKey="z9ht7p5r21591bc3n06i1yc7nmokdeorgawiso8vkpodbvp0"
+                                    <input
+                                        name="location_ru"
                                         value={data.location_ru}
-                                        onEditorChange={(content) => handleEditorChange('location_ru', content)}
-                                        init={{
-                                            height: 200,
-                                            menubar: false,
-                                            plugins: 'link image code lists',
-                                            toolbar: 'undo redo | bold italic | alignleft aligncenter alignright | bullist numlist outdent indent | code',
-                                        }}
+                                        onChange={handleChange}
+                                        type="text"
+                                        required
+                                        className="border border-gray-300 rounded p-2 w-full"
                                     />
                                 </div>
                             </div>

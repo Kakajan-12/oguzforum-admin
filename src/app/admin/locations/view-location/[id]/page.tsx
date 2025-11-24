@@ -11,7 +11,6 @@ import {
     TrashIcon,
 } from '@heroicons/react/16/solid';
 
-// Типизация объекта Location
 type LocationData = {
     id: number;
     location_tk: string;

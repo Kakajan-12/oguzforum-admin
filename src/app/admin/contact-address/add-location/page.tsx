@@ -4,13 +4,12 @@ import {useEffect, useState} from 'react';
 import { useRouter } from 'next/navigation';
 import Sidebar from '@/Components/Sidebar';
 import TokenTimer from '@/Components/TokenTimer';
-import {Editor} from "@tinymce/tinymce-react";
 
 const ContactLocation = () => {
     const [isClient, setIsClient] = useState(false);
-    const [tk, setTk] = useState('');
-    const [en, setEn] = useState('');
-    const [ru, setRu] = useState('');
+    const [address_tk, setAddressTk] = useState('');
+    const [address_en, setAddressEn] = useState('');
+    const [address_ru, setAddressRu] = useState('');
     const [location_tk, setLocationTk] = useState('');
     const [location_en, setLocationEn] = useState('');
     const [location_ru, setLocationRu] = useState('');
@@ -31,9 +30,9 @@ const ContactLocation = () => {
         }
 
         const payload = {
-            tk,
-            en,
-            ru,
+            address_tk,
+            address_en,
+            address_ru,
             location_tk,
             location_en,
             location_ru,
@@ -53,9 +52,9 @@ const ContactLocation = () => {
             if (response.ok) {
                 const data = await response.json();
                 console.log(' добавлены!', data);
-                setTk('');
-                setEn('');
-                setRu('');
+                setAddressTk('');
+                setAddressEn('');
+                setAddressRu('');
                 setLocationTk('');
                 setLocationEn('');
                 setLocationRu('');
@@ -68,14 +67,6 @@ const ContactLocation = () => {
         } catch (error) {
             console.error('Ошибка запроса', error);
         }
-    };
-
-    const editorConfig = {
-        height: 200,
-        menubar: false,
-        plugins: ['lists link image editimage table code'],
-        toolbar: 'undo redo | styleselect | bold italic | alignleft aligncenter alignright | bullist numlist outdent indent | link image code',
-        content_css: '//www.tiny.cloud/css/codepen.min.css',
     };
 
     return (
@@ -92,12 +83,12 @@ const ContactLocation = () => {
 
                         <div className="mb-5">
                             <label className="block text-gray-700 font-semibold mb-2">Add location iframe code</label>
-                            <input
-                                type="text"
+                            <textarea
                                 value={iframe_code}
                                 onChange={(e) => setIframe(e.target.value)}
-                                className="border border-gray-300 rounded p-2 w-full"
-                            />
+                                className="border border-gray-300 rounded p-2 w-full h-44"
+                            >
+                            </textarea>
 
                         </div>
 
@@ -110,20 +101,22 @@ const ContactLocation = () => {
                                         <div className="mb-4">
                                             <label className="block text-gray-700 font-semibold mb-2">Location:</label>
                                             <input
-                                                value={tk}
-                                                onChange={(e) => setTk(e.target.value)}
+                                                value={location_tk}
+                                                onChange={(e) => setLocationTk(e.target.value)}
                                                 type="text"
                                                 required
                                                 className="border border-gray-300 rounded p-2 w-full"
                                             />
                                         </div>
                                         <div className="mb-4">
-                                            <label className="block text-gray-700 font-semibold mb-2">Location Address:</label>
-                                            <Editor
-                                                apiKey="z9ht7p5r21591bc3n06i1yc7nmokdeorgawiso8vkpodbvp0"
-                                                init={editorConfig}
-                                                value={location_tk}
-                                                onEditorChange={(content) => setLocationTk(content)}
+                                            <label className="block text-gray-700 font-semibold mb-2">Location
+                                                Address:</label>
+                                            <input
+                                                value={address_tk}
+                                                onChange={(e) => setAddressTk(e.target.value)}
+                                                type="text"
+                                                required
+                                                className="border border-gray-300 rounded p-2 w-full"
                                             />
                                         </div>
                                     </div>
@@ -133,8 +126,8 @@ const ContactLocation = () => {
                                         <div className="mb-4">
                                             <label className="block text-gray-700 font-semibold mb-2">Location:</label>
                                             <input
-                                                value={en}
-                                                onChange={(e) => setEn(e.target.value)}
+                                                value={location_en}
+                                                onChange={(e) => setLocationEn(e.target.value)}
                                                 type="text"
                                                 required
                                                 className="border border-gray-300 rounded p-2 w-full"
@@ -142,22 +135,23 @@ const ContactLocation = () => {
                                         </div>
                                         <div className="mb-4">
                                             <label className="block text-gray-700 font-semibold mb-2">Location Address:</label>
-                                            <Editor
-                                                apiKey="z9ht7p5r21591bc3n06i1yc7nmokdeorgawiso8vkpodbvp0"
-                                                init={editorConfig}
-                                                value={location_en}
-                                                onEditorChange={(content) => setLocationEn(content)}
+                                            <input
+                                                value={address_en}
+                                                onChange={(e) => setAddressEn(e.target.value)}
+                                                type="text"
+                                                required
+                                                className="border border-gray-300 rounded p-2 w-full"
                                             />
                                         </div>
                                     </div>
 
-                                    <input type="radio" name="my_tabs_3" className="tab" aria-label="Russian" />
+                                    <input type="radio" name="my_tabs_3" className="tab" aria-label="Russian"/>
                                     <div className="tab-content bg-base-100 border-base-300 p-6">
                                         <div className="mb-4">
                                             <label className="block text-gray-700 font-semibold mb-2">Location:</label>
                                             <input
-                                                value={ru}
-                                                onChange={(e) => setRu(e.target.value)}
+                                                value={location_ru}
+                                                onChange={(e) => setLocationRu(e.target.value)}
                                                 type="text"
                                                 required
                                                 className="border border-gray-300 rounded p-2 w-full"
@@ -165,11 +159,12 @@ const ContactLocation = () => {
                                         </div>
                                         <div className="mb-4">
                                             <label className="block text-gray-700 font-semibold mb-2">Location Address:</label>
-                                            <Editor
-                                                apiKey="z9ht7p5r21591bc3n06i1yc7nmokdeorgawiso8vkpodbvp0"
-                                                init={editorConfig}
-                                                value={location_ru}
-                                                onEditorChange={(content) => setLocationRu(content)}
+                                            <input
+                                                value={address_ru}
+                                                onChange={(e) => setAddressRu(e.target.value)}
+                                                type="text"
+                                                required
+                                                className="border border-gray-300 rounded p-2 w-full"
                                             />
                                         </div>
                                     </div>

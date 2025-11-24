@@ -12,27 +12,45 @@ import {
     TrashIcon,
 } from '@heroicons/react/16/solid';
 
+interface Organizer {
+    id: number;
+    organizer_logo: string;
+    organizer_tk: string;
+    organizer_en: string;
+    organizer_ru: string;
+}
+
 interface Project {
     id: number;
     image: string;
+    logo: string;
     tk: string;
     text_tk: string;
     location_tk: string;
+    type_tk: string;
     en: string;
     text_en: string;
     location_en: string;
+    type_en: string;
     ru: string;
     text_ru: string;
     date: string;
     end_date: string;
     link: string;
     location_ru: string;
+    type_ru: string;
+    speakers: string;
+    delegates: string;
+    countries: string;
+    companies: string;
+    media: string;
+    organizers?: Organizer[];
 }
 
 const ViewProject = () => {
     const {id} = useParams();
-    const [data, setData] = useState<Project | null>(null); // Типизируем data
-    const [error, setError] = useState<string | null>(null); // Типизируем error
+    const [data, setData] = useState<Project | null>(null);
+    const [error, setError] = useState<string | null>(null);
     const [showModal, setShowModal] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
     const router = useRouter();
@@ -146,29 +164,88 @@ const ViewProject = () => {
                     <div className="bg-white p-4 rounded-md border-gray-200 flex">
                         <div>
                             {data.image && (
-                                <Image
-                                    src={`${process.env.NEXT_PUBLIC_API_URL}/${data.image.replace('\\', '/')}`}
-                                    alt="Projects"
-                                    width={500}
-                                    height={400}
-                                    className="rounded mb-6"
-                                />
+                                <div>
+                                    <div>Image</div>
+                                    <Image
+                                        src={`${process.env.NEXT_PUBLIC_API_URL}/${data.image.replace('\\', '/')}`}
+                                        alt="Projects"
+                                        width={500}
+                                        height={400}
+                                        className="rounded mb-6"
+                                    />
+                                </div>
                             )}
-                            <div>
-                                Start date:{" "}
-                                <span className="font-bolder">
+                            {data.logo && (
+                                <div>
+                                    <div>Logo</div>
+                                    <Image
+                                        src={`${process.env.NEXT_PUBLIC_API_URL}/${data.logo.replace('\\', '/')}`}
+                                        alt="Projects"
+                                        width={100}
+                                        height={100}
+                                        className="rounded mb-6"
+                                    />
+                                </div>
+
+                            )}
+                            {data.organizers && data.organizers.length > 0 && (
+                                <div className="mt-8">
+                                    <h3 className="text-xl font-semibold mb-4">Organizers</h3>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        {data.organizers.map((org) => (
+                                            <div key={org.id} className="bg-gray-50 p-4 rounded-lg shadow">
+                                                {org.organizer_logo && (
+                                                    <Image
+                                                        src={`${process.env.NEXT_PUBLIC_API_URL}/${org.organizer_logo.replace('\\', '/')}`}
+                                                        alt={org.organizer_en}
+                                                        width={200}
+                                                        height={200}
+                                                        className="rounded mb-3"
+                                                    />
+                                                )}
+                                                <div>
+                                                    <p><strong>TM:</strong> {org.organizer_tk}</p>
+                                                    <p><strong>EN:</strong> {org.organizer_en}</p>
+                                                    <p><strong>RU:</strong> {org.organizer_ru}</p>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            <div className="space-y-2">
+                                <div>
+                                    Start date:{" "}
+                                    <span className="font-bolder">
                                     {new Date(data.date).toLocaleDateString("tm-TM")}
                                 </span>
-                            </div>
+                                </div>
 
-                            <div>
-                                End date:{" "}
-                                <span className="font-bolder">
+                                <div>
+                                    End date:{" "}
+                                    <span className="font-bolder">
                                     {new Date(data.end_date).toLocaleDateString("tm-TM")}
                                 </span>
-                            </div>
-                            <div>
-                                <p>Link: {data.link}</p>
+                                </div>
+                                <div>
+                                    <p>Link: {data.link}</p>
+                                </div>
+                                <div>
+                                    <p>Speakers: {data.speakers}</p>
+                                </div>
+                                <div>
+                                    <p>Delegates: {data.delegates}</p>
+                                </div>
+                                <div>
+                                    <p>Countries: {data.countries}</p>
+                                </div>
+                                <div>
+                                    <p>Companies: {data.companies}</p>
+                                </div>
+                                <div>
+                                    <p>Media: {data.media}</p>
+                                </div>
                             </div>
                         </div>
 
@@ -193,6 +270,12 @@ const ViewProject = () => {
                                         <div dangerouslySetInnerHTML={{__html: data.location_tk}}/>
                                     </div>
                                 )}
+                                {data.type_tk && (
+                                    <div>
+                                    <strong>Type:</strong>
+                                        <div dangerouslySetInnerHTML={{__html: data.type_tk}}/>
+                                    </div>
+                                )}
                             </div>
                             <div className="mb-10 space-y-4">
                                 <div className="font-bold text-lg mb-4">English</div>
@@ -215,6 +298,12 @@ const ViewProject = () => {
                                         <div dangerouslySetInnerHTML={{__html: data.location_en}}/>
                                     </div>
                                 )}
+                                {data.type_en && (
+                                    <div>
+                                        <strong>Type:</strong>
+                                        <div dangerouslySetInnerHTML={{__html: data.type_en}}/>
+                                    </div>
+                                )}
                             </div>
                             <div className="mb-10 space-y-4">
                                 <div className="font-bold text-lg mb-4">Russian</div>
@@ -234,6 +323,12 @@ const ViewProject = () => {
                                     <div>
                                         <strong>Location:</strong>
                                         <div dangerouslySetInnerHTML={{__html: data.location_ru}}/>
+                                    </div>
+                                )}
+                                {data.type_ru && (
+                                    <div>
+                                        <strong>Type:</strong>
+                                        <div dangerouslySetInnerHTML={{__html: data.type_ru}}/>
                                     </div>
                                 )}
                             </div>

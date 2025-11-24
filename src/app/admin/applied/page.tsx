@@ -6,11 +6,9 @@ import Sidebar from "@/Components/Sidebar";
 import TokenTimer from "@/Components/TokenTimer";
 import Link from "next/link";
 import { EyeIcon } from "@heroicons/react/16/solid";
-import Image from "next/image";
 
 type AppliedItem = {
     id: number;
-    photo: string;
     name: string;
     surname: string;
     email: string;
@@ -68,7 +66,6 @@ const Applied = () => {
                     <table className="min-w-full bg-white border border-gray-200 rounded-lg">
                         <thead>
                         <tr>
-                            <th className="py-2 px-4 border-b-2 border-gray-200 text-left text-gray-600">Photo</th>
                             <th className="py-2 px-4 border-b-2 border-gray-200 text-left text-gray-600">Name</th>
                             <th className="py-2 px-4 border-b-2 border-gray-200 text-left text-gray-600">Surname</th>
                             <th className="py-2 px-4 border-b-2 border-gray-200 text-left text-gray-600">Email</th>
@@ -84,14 +81,6 @@ const Applied = () => {
                         ) : (
                             applied.map(data => (
                                 <tr key={data.id}>
-                                    <td className="py-4 px-4 border-b border-gray-200">
-                                        <Image
-                                            src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/${data.photo}`.replace(/\\/g, '/')}
-                                            alt={`Photo ${data.id}`}
-                                            width={100}
-                                            height={100}
-                                        />
-                                    </td>
                                     <td className="py-4 px-4 border-b border-gray-200">{data.name}</td>
                                     <td className="py-4 px-4 border-b border-gray-200">{data.surname}</td>
                                     <td className="py-4 px-4 border-b border-gray-200">{data.email}</td>

@@ -11,6 +11,7 @@ import Image from "next/image";
 interface Project {
     id: number;
     image: string;
+    logo: string;
     tk: string;
     en: string;
     ru: string;
@@ -20,7 +21,7 @@ interface Project {
 }
 
 const Projects = () => {
-    const [projects, setProjects] = useState<Project[]>([]); // Указываем тип состояния
+    const [projects, setProjects] = useState<Project[]>([]);
     const [error, setError] = useState<string | null>(null);
     const router = useRouter();
 
@@ -79,8 +80,8 @@ const Projects = () => {
                         <thead>
                         <tr>
                             <th className="py-2 px-4 border-b-2 border-gray-200 text-left text-gray-600">Image</th>
+                            <th className="py-2 px-4 border-b-2 border-gray-200 text-left text-gray-600">Logo</th>
                             <th className="py-2 px-4 border-b-2 border-gray-200 text-left text-gray-600">Title</th>
-                            <th className="py-2 px-4 border-b-2 border-gray-200 text-left text-gray-600">Text</th>
                             <th className="py-2 px-4 border-b-2 border-gray-200 text-left text-gray-600">View</th>
                         </tr>
                         </thead>
@@ -101,10 +102,15 @@ const Projects = () => {
                                         />
                                     </td>
                                     <td className="py-4 px-4 border-b border-gray-200">
-                                        <div dangerouslySetInnerHTML={{ __html: project.en }} />
+                                        <Image
+                                            src={`${process.env.NEXT_PUBLIC_API_URL}/${project.logo}`}
+                                            alt={`Project ${project.id}`}
+                                            width={100}
+                                            height={100}
+                                        />
                                     </td>
                                     <td className="py-4 px-4 border-b border-gray-200">
-                                        <div dangerouslySetInnerHTML={{ __html: project.text_en }} />
+                                        <div dangerouslySetInnerHTML={{ __html: project.en }} />
                                     </td>
                                     <td className="py-4 px-4 border-b border-gray-200">
                                         <Link

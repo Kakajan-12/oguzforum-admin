@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="5c7ad2a3-ff1a-443b-9552-33cbd5bad285" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/src/app/admin/contact-mails/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/admin/contact-mails/view-mail/[id]/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/admin/press-category/add-press-category/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/admin/press-category/edit-press-category/[id]/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/admin/press-category/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/admin/press-category/view-press-category/[id]/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/admin/press/add-press/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/admin/press/edit-press/[id]/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/admin/press/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/admin/press/view-press/[id]/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/admin/reference/add-reference/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/admin/reference/edit-reference/[id]/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/admin/reference/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/admin/reference/view-reference/[id]/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/admin/types/add-type/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/admin/types/edit-type/[id]/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/admin/types/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/admin/types/view-type/[id]/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/next.config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/next.config.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Components/Sidebar.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Components/Sidebar.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/admin/applied/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/admin/applied/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/admin/applied/view-applied/[id]/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/admin/applied/view-applied/[id]/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/admin/contact-address/add-location/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/admin/contact-address/add-location/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/admin/contact-address/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/admin/contact-address/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/admin/contacts/edit-contacts/[id]/page.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/admin/contacts/page.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/admin/gallery/add-gallery/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/admin/gallery/add-gallery/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/admin/gallery/edit-gallery/[id]/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/admin/gallery/edit-gallery/[id]/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/admin/gallery/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/admin/gallery/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/admin/locations/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/admin/locations/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/admin/locations/view-location/[id]/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/admin/locations/view-location/[id]/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/admin/news-category/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/admin/news-category/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/admin/news-category/view-news-category/[id]/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/admin/news-category/view-news-category/[id]/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/admin/projects/add-project/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/admin/projects/add-project/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/admin/projects/edit-project/[id]/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/admin/projects/edit-project/[id]/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/admin/projects/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/admin/projects/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/admin/projects/view-project/[id]/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/admin/projects/view-project/[id]/page.tsx" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 3
+}</component>
+  <component name="ProjectId" id="352lFNJLJG45htX2RzOBUHmvY5r" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/website/adminka/src/app/admin&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;D:\\website\\adminka\\node_modules\\typescript\\lib&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  }
+}</component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\website\adminka\src\app\admin" />
+      <recent name="D:\website\adminka\src\app\admin\types" />
+    </key>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-js-predefined-d6986cc7102b-7c0b70fcd90d-JavaScript-WS-242.21829.149" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="5c7ad2a3-ff1a-443b-9552-33cbd5bad285" name="Changes" comment="" />
+      <created>1762315942264</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1762315942264</updated>
+      <workItem from="1762315943380" duration="6836000" />
+      <workItem from="1762500667839" duration="2505000" />
+      <workItem from="1762634858935" duration="6502000" />
+      <workItem from="1762674062422" duration="3162000" />
+      <workItem from="1762744574748" duration="6916000" />
+      <workItem from="1762892225372" duration="10855000" />
+      <workItem from="1762925150130" duration="2907000" />
+      <workItem from="1762954987660" duration="7677000" />
+      <workItem from="1763046845849" duration="1797000" />
+      <workItem from="1763103045072" duration="1133000" />
+      <workItem from="1763124766366" duration="1482000" />
+      <workItem from="1763238425700" duration="594000" />
+      <workItem from="1763270954448" duration="1230000" />
+      <workItem from="1763341111054" duration="561000" />
+      <workItem from="1763348962047" duration="4000" />
+      <workItem from="1763440885905" duration="8546000" />
+      <workItem from="1763550091114" duration="720000" />
+      <workItem from="1763583571158" duration="2897000" />
+      <workItem from="1763684508194" duration="689000" />
+      <workItem from="1763761168036" duration="6519000" />
+      <workItem from="1763818296475" duration="617000" />
+      <workItem from="1763833629550" duration="3351000" />
+      <workItem from="1763841437059" duration="1676000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+</project>

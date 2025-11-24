@@ -5,20 +5,29 @@ import axios from "axios";
 import Sidebar from "@/Components/Sidebar";
 import TokenTimer from "@/Components/TokenTimer";
 import Link from "next/link";
-import { EyeIcon, PlusCircleIcon } from "@heroicons/react/16/solid";
+import { ChevronDownIcon, ChevronUpIcon, EyeIcon, PlusCircleIcon } from "@heroicons/react/16/solid";
 import Image from "next/image";
 
-// Типизация элемента галереи
 type GalleryItem = {
     id: number;
     image: string;
-    tk: string;
-    en: string;
-    ru: string;
+    project_id: number;
+    tk?: string;
+    en?: string;
+    ru?: string;
+};
+
+type GroupedGallery = {
+    project_id: number;
+    tk?: string;
+    en?: string;
+    ru?: string;
+    images: GalleryItem[];
 };
 
 const Gallery = () => {
-    const [gallery, setGallery] = useState<GalleryItem[]>([]);
+    const [gallery, setGallery] = useState<GroupedGallery[]>([]);
+    const [expanded, setExpanded] = useState<number | null>(null);
     const [error, setError] = useState<string | null>(null);
     const router = useRouter();
 
@@ -26,26 +35,34 @@ const Gallery = () => {
         const fetchGallery = async () => {
             try {
                 const token = localStorage.getItem('auth_token');
-                if (!token) {
-                    router.push('/');
-                    return;
-                }
+                if (!token) return router.push('/');
 
                 const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/gallery`, {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
+                    headers: { Authorization: `Bearer ${token}` },
                 });
 
-                setGallery(response.data);
-            } catch (err) {
-                if (axios.isAxiosError(err)) {
-                    setError('Ошибка при получении данных');
-                    if (err.response?.status === 401) {
-                        router.push('/');
+                const grouped = response.data.reduce((acc: GroupedGallery[], item: GalleryItem) => {
+                    const existing = acc.find(g => g.project_id === item.project_id);
+                    if (existing) {
+                        existing.images.push(item);
+                    } else {
+                        acc.push({
+                            project_id: item.project_id,
+                            tk: item.tk,
+                            en: item.en,
+                            ru: item.ru,
+                            images: [item],
+                        });
                     }
-                } else {
-                    setError('Неизвестная ошибка');
+                    return acc;
+                }, []);
+
+                setGallery(grouped);
+            } catch (err) {
+                console.error(err);
+                setError('Ошибка при получении данных');
+                if (axios.isAxiosError(err) && err.response?.status === 401) {
+                    router.push('/');
                 }
             }
         };
@@ -53,77 +70,82 @@ const Gallery = () => {
         fetchGallery();
     }, [router]);
 
-    const renderError = () => (
-        <div className="text-red-500 py-4">
-            <strong>Error: </strong>{error}
-        </div>
-    );
-
-    if (error) return renderError();
+    const toggleExpand = (project_id: number) => {
+        setExpanded(prev => (prev === project_id ? null : project_id));
+    };
 
     return (
-        <div className="flex bg-gray-200">
+        <div className="flex bg-gray-200 min-h-screen">
             <Sidebar />
             <div className="flex-1 p-10 ml-62">
                 <TokenTimer />
                 <div className="mt-8">
-                    <div className="w-full flex justify-between items-center">
-                        <h2 className="text-2xl font-bold mb-4">Gallery</h2>
-                        <Link href="/admin/gallery/add-gallery"
-                              className="bg text-white h-fit py-2 px-8 rounded-md cursor-pointer flex items-center hover:bg-blue-700">
-                            <PlusCircleIcon className="w-6 h-6" color="#ffffff" />
-                            <div className="ml-2">Add</div>
+                    <div className="w-full flex justify-between items-center mb-4">
+                        <h2 className="text-2xl font-bold">Gallery</h2>
+                        <Link
+                            href="/admin/gallery/add-gallery"
+                            className="bg text-white py-2 px-8 rounded-md flex items-center hover:bg-blue-700"
+                        >
+                            <PlusCircleIcon className="w-5 h-5 mr-2" />
+                            Add
                         </Link>
                     </div>
 
-                    <table className="min-w-full bg-white border border-gray-200 rounded-lg">
-                        <thead>
-                        <tr>
-                            <th className="py-2 px-4 border-b-2 border-gray-200 text-left text-gray-600">Image</th>
-                            <th className="py-2 px-4 border-b-2 border-gray-200 text-left text-gray-600">Turkmen</th>
-                            <th className="py-2 px-4 border-b-2 border-gray-200 text-left text-gray-600">English</th>
-                            <th className="py-2 px-4 border-b-2 border-gray-200 text-left text-gray-600">Russian</th>
-                            <th className="py-2 px-4 border-b-2 border-gray-200 text-left text-gray-600">View</th>
-                        </tr>
-                        </thead>
-                        <tbody>
+                    {error && <div className="text-red-500">{error}</div>}
+
+                    <div className="bg-white rounded shadow divide-y">
                         {gallery.length === 0 ? (
-                            <tr>
-                                <td colSpan={5} className="text-center py-4">No sliders available</td>
-                            </tr>
+                            <p className="p-4 text-gray-500">No gallery items found.</p>
                         ) : (
-                            gallery.map((data) => (
-                                <tr key={data.id}>
-                                    <td className="py-4 px-4 border-b border-gray-200">
-                                        <Image
-                                            src={`${process.env.NEXT_PUBLIC_API_URL}/${data.image}`}
-                                            alt={`Gallery ${data.id}`}
-                                            width={100}
-                                            height={100}
-                                            className="rounded"
+                            gallery.map(group => (
+                                <div key={group.project_id}>
+                                    <button
+                                        onClick={() => toggleExpand(group.project_id)}
+                                        className="w-full text-left p-4 hover:bg-gray-100 flex justify-between items-center"
+                                    >
+                                        <div
+                                            className="font-bold text-2xl"
+                                            dangerouslySetInnerHTML={{ __html: group.en || 'Untitled' }}
                                         />
-                                    </td>
-                                    <td className="py-4 px-4 border-b border-gray-200">
-                                        <div dangerouslySetInnerHTML={{ __html: data.tk }} />
-                                    </td>
-                                    <td className="py-4 px-4 border-b border-gray-200">
-                                        <div dangerouslySetInnerHTML={{ __html: data.en }} />
-                                    </td>
-                                    <td className="py-4 px-4 border-b border-gray-200">
-                                        <div dangerouslySetInnerHTML={{ __html: data.ru }} />
-                                    </td>
-                                    <td className="py-4 px-4 border-b border-gray-200">
-                                        <Link href={`/admin/gallery/view-gallery/${data.id}`}
-                                              className="bg text-white py-2 px-8 rounded-md cursor-pointer flex items-center hover:bg-green-700 w-fit">
-                                            <EyeIcon className="w-5 h-5" color="#ffffff" />
-                                            <div className="ml-2">View</div>
-                                        </Link>
-                                    </td>
-                                </tr>
+                                        {expanded === group.project_id ? (
+                                            <ChevronUpIcon className="w-5 h-5" />
+                                        ) : (
+                                            <ChevronDownIcon className="w-5 h-5" />
+                                        )}
+                                    </button>
+
+                                    {expanded === group.project_id && (
+                                        <div className="p-4 bg-gray-50 flex flex-row gap-4 flex-wrap">
+                                            {group.images.map(img => (
+                                                <div
+                                                    key={img.id}
+                                                    className="flex flex-col justify-between bg-white rounded shadow p-4 w-48 min-h-[250px]"
+                                                >
+                                                    <Image
+                                                        src={`${process.env.NEXT_PUBLIC_API_URL}/${img.image.replace(/\\/g, '/')}`}
+                                                        alt={`Image ${img.id}`}
+                                                        width={200}
+                                                        height={200}
+                                                        className="rounded object-cover"
+                                                    />
+
+                                                    <div className="mt-auto">
+                                                        <Link
+                                                            href={`/admin/gallery/view-gallery/${img.id}`}
+                                                            className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 flex items-center justify-center"
+                                                        >
+                                                            <EyeIcon className="w-4 h-4 mr-2" />
+                                                            View
+                                                        </Link>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
                             ))
                         )}
-                        </tbody>
-                    </table>
+                    </div>
                 </div>
             </div>
         </div>

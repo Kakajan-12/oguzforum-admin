@@ -1,16 +1,16 @@
 'use client';
-import React, { useEffect, useState } from 'react';
+import React, {FormEvent, useEffect, useState} from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import axios from 'axios';
 import Sidebar from "@/Components/Sidebar";
 import TokenTimer from "@/Components/TokenTimer";
 import { DocumentIcon } from "@heroicons/react/16/solid";
 
-const EditContact = () => {
+const EditPressCategory = () => {
     const { id } = useParams();
     const router = useRouter();
 
-    const [data, setData] = useState({ tk: '', en: '', ru: '', mail: '', number: '' });
+    const [data, setData] = useState({ cat_tk: '', cat_en: '', cat_ru: '' });
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
 
@@ -18,7 +18,7 @@ const EditContact = () => {
         const fetchData = async () => {
             try {
                 const token = localStorage.getItem('auth_token');
-                const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/contacts/${id}`, {
+                const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/press-cat/${id}`, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
@@ -41,16 +41,16 @@ const EditContact = () => {
         setData((prev) => ({ ...prev, [name]: value }));
     };
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
         try {
             const token = localStorage.getItem('auth_token');
-            await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/api/contacts/${id}`, data, {
+            await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/api/press-cat/${id}`, data, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
             });
-            router.push('/admin/contacts');
+            router.push('/admin/press-category');
         } catch (err) {
             console.error('Ошибка при сохранении:', err);
             setError('Ошибка при сохранении');
@@ -66,13 +66,13 @@ const EditContact = () => {
             <div className="flex-1 p-10 ml-62">
                 <TokenTimer />
                 <div className="mt-8">
-                    <h1 className="text-2xl font-bold mb-4">Edit Location</h1>
+                    <h1 className="text-2xl font-bold mb-4">Edit Press Category</h1>
                     <form onSubmit={handleSubmit} className="space-y-6 bg-white p-6 rounded shadow">
                         <div className="mb-4">
                             <label className="block text-gray-700 font-semibold mb-2">Turkmen:</label>
                             <input
-                                name="tk"
-                                value={data.tk}
+                                name="cat_tk"
+                                value={data.cat_tk}
                                 onChange={handleChange}
                                 type="text"
                                 required
@@ -82,8 +82,8 @@ const EditContact = () => {
                         <div className="mb-4">
                             <label className="block text-gray-700 font-semibold mb-2">English:</label>
                             <input
-                                name="en"
-                                value={data.en}
+                                name="cat_en"
+                                value={data.cat_en}
                                 onChange={handleChange}
                                 type="text"
                                 required
@@ -93,41 +93,20 @@ const EditContact = () => {
                         <div className="mb-4">
                             <label className="block text-gray-700 font-semibold mb-2">Russian:</label>
                             <input
-                                name="ru"
-                                value={data.ru}
+                                name="cat_ru"
+                                value={data.cat_ru}
                                 onChange={handleChange}
                                 type="text"
                                 required
                                 className="border border-gray-300 rounded p-2 w-full"
                             />
                         </div>
-                        <div className="mb-4">
-                            <label className="block text-gray-700 font-semibold mb-2">Mail:</label>
-                            <input
-                                name="mail"
-                                value={data.mail}
-                                onChange={handleChange}
-                                type="text"
-                                required
-                                className="border border-gray-300 rounded p-2 w-full"
-                            />
-                        </div>
-                        <div className="mb-4">
-                            <label className="block text-gray-700 font-semibold mb-2">Number:</label>
-                            <input
-                                name="number"
-                                value={data.number}
-                                onChange={handleChange}
-                                type="text"
-                                required
-                                className="border border-gray-300 rounded p-2 w-full"
-                            />
-                        </div>
+
                         <button
                             type="submit"
                             className="bg text-white px-4 py-2 rounded flex items-center hover:bg-blue-700"
                         >
-                            <DocumentIcon className="size-5 mr-2"/>
+                            <DocumentIcon className="size-5 mr-2" />
                             Save
                         </button>
                     </form>
@@ -137,4 +116,4 @@ const EditContact = () => {
     );
 };
 
-export default EditContact;
+export default EditPressCategory;

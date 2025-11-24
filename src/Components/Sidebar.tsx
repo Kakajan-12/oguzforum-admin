@@ -7,7 +7,6 @@ import {
     PhotoIcon,
     WindowIcon,
     UserPlusIcon,
-    MapIcon,
     PresentationChartLineIcon,
     ListBulletIcon,
     QuestionMarkCircleIcon,
@@ -15,8 +14,12 @@ import {
     EnvelopeIcon,
     LinkIcon,
     CircleStackIcon,
-    ClipboardDocumentListIcon,
+    ClipboardDocumentListIcon, CalendarDaysIcon,
 } from "@heroicons/react/16/solid";
+import { VscReferences } from "react-icons/vsc";
+import {BsNewspaper} from "react-icons/bs";
+import {IoMailOpenSharp} from "react-icons/io5";
+import {FaPhone} from "react-icons/fa6";
 
 const menuGroups = [
     {
@@ -29,20 +32,24 @@ const menuGroups = [
         ],
     },
     {
-        title: "News",
+        title: "News/Press",
         key: "news",
         links: [
             { href: "/admin/news", label: "News", icon: NewspaperIcon },
             { href: "/admin/news-category", label: "News Category", icon: NewspaperIcon },
+            { href: "/admin/press", label: "Press", icon: BsNewspaper  },
+            { href: "/admin/press-category", label: "Press Category", icon: BsNewspaper  },
         ],
     },
     {
-        title: "Projects & Locations",
+        title: "Projects",
         key: "projects",
         links: [
             { href: "/admin/projects", label: "Projects", icon: BriefcaseIcon },
             { href: "/admin/locations", label: "Locations", icon: MapPinIcon },
+            { href: "/admin/types", label: "Types", icon: CalendarDaysIcon },
             { href: "/admin/gallery", label: "Gallery", icon: PhotoIcon },
+            { href: "/admin/reference", label: "Reference Letter", icon: VscReferences },
         ],
     },
     {
@@ -60,7 +67,8 @@ const menuGroups = [
         key: "contacts",
         links: [
             { href: "/admin/social-links", label: "Social Links", icon: LinkIcon },
-            { href: "/admin/contacts", label: "Contacts", icon: MapIcon },
+            { href: "/admin/contact-numbers", label: "Contact Numbers", icon: FaPhone},
+            { href: "/admin/contact-mails", label: "Contact Mails", icon: IoMailOpenSharp  },
             { href: "/admin/contact-address", label: "Contact Locations", icon: MapPinIcon },
         ],
     },

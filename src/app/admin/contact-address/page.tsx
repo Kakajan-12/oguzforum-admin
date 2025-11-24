@@ -9,12 +9,8 @@ import { EyeIcon, PlusCircleIcon } from "@heroicons/react/16/solid";
 
 type Location = {
     id: number;
-    tk: string;
-    en: string;
-    ru: string;
-    location_tk: string;
     location_en: string;
-    location_ru: string;
+    address_en: string;
 };
 
 const ContactLocations = () => {
@@ -78,9 +74,8 @@ const ContactLocations = () => {
                     <table className="min-w-full bg-white border border-gray-200 rounded-lg">
                         <thead>
                         <tr>
-                            <th className="py-2 px-4 border-b-2 border-gray-200 text-left text-gray-600">Turkmen</th>
-                            <th className="py-2 px-4 border-b-2 border-gray-200 text-left text-gray-600">English</th>
-                            <th className="py-2 px-4 border-b-2 border-gray-200 text-left text-gray-600">Russian</th>
+                            <th className="py-2 px-4 border-b-2 border-gray-200 text-left text-gray-600">Location</th>
+                            <th className="py-2 px-4 border-b-2 border-gray-200 text-left text-gray-600">Address</th>
                             <th className="py-2 px-4 border-b-2 border-gray-200 text-left text-gray-600">View</th>
                         </tr>
                         </thead>
@@ -93,13 +88,10 @@ const ContactLocations = () => {
                             locations.map((location) => (
                                 <tr key={location.id}>
                                     <td className="py-4 px-4 border-b border-gray-200">
-                                        <div dangerouslySetInnerHTML={{ __html: location.location_tk }} />
-                                    </td>
-                                    <td className="py-4 px-4 border-b border-gray-200">
                                         <div dangerouslySetInnerHTML={{ __html: location.location_en }} />
                                     </td>
                                     <td className="py-4 px-4 border-b border-gray-200">
-                                        <div dangerouslySetInnerHTML={{ __html: location.location_ru }} />
+                                        <div dangerouslySetInnerHTML={{ __html: location.address_en }} />
                                     </td>
                                     <td className="py-4 px-4 border-b border-gray-200">
                                         <Link

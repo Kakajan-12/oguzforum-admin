@@ -10,18 +10,13 @@ import {ChevronDownIcon, TrashIcon} from "@heroicons/react/16/solid";
 
 interface AppliedData {
     id: number;
-    photo: string;
     name: string;
     surname: string;
     email: string;
     number: string;
-    address: string;
-    education: string;
-    experience: string;
-    comment: string;
-    tk: string;
+    portfolio: string;
+    cv: string;
     en: string;
-    ru: string;
 }
 
 const ViewApplied = () => {
@@ -125,20 +120,6 @@ const ViewApplied = () => {
                     </div>
 
                     <div className="bg-white p-4 rounded-md border-gray-200 flex">
-                        <div>
-                            {data.photo ? (
-                                <Image
-                                    src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/${data.photo.replace(/\\/g, '/')}`}
-                                    alt="Photo"
-                                    width={500}
-                                    height={400}
-                                    className="rounded mb-6"
-                                />
-                            ) : (
-                                <p className="italic text-gray-500">No photo uploaded</p>
-                            )}
-                        </div>
-
                         <div className="space-y-4 ml-4">
                             {data.name && (
                                 <div>
@@ -164,26 +145,15 @@ const ViewApplied = () => {
                                     <p>{data.number}</p>
                                 </div>
                             )}
-                            {data.address && (
-                                <div>
-                                    <strong>Address:</strong>
-                                    <p>{data.address}</p>
-                                </div>
-                            )}
-                            {data.education && (
-                                <div>
-                                    <strong>Education:</strong>
-                                    <p>{data.education}</p>
-                                </div>
-                            )}
-                            {data.experience && (
+
+                            {data.portfolio && (
                                 <div className="flex flex-col gap-x-2">
-                                    <strong>CV:</strong>
+                                    <strong>Portfolio:</strong>
                                     <div className="flex space-x-2 items-center">
                                         <Image src="/pdf.png" alt="pdf" width={30} height={30}
                                                className="rounded mb-6"/>
                                         <a
-                                            href={`${process.env.NEXT_PUBLIC_API_URL}/uploads/${data.experience}`}
+                                            href={`${process.env.NEXT_PUBLIC_API_URL}/uploads/${data.portfolio}`}
                                             download
                                             className="text-blue-600 underline"
                                         >
@@ -194,28 +164,27 @@ const ViewApplied = () => {
                                 </div>
                             )}
 
-                            {data.comment && (
-                                <div>
-                                    <strong>Experience:</strong>
-                                    <p>{data.comment}</p>
+                            {data.cv && (
+                                <div className="flex flex-col gap-x-2">
+                                    <strong>CV:</strong>
+                                    <div className="flex space-x-2 items-center">
+                                        <Image src="/pdf.png" alt="pdf" width={30} height={30}
+                                               className="rounded mb-6"/>
+                                        <a
+                                            href={`${process.env.NEXT_PUBLIC_API_URL}/uploads/${data.cv}`}
+                                            download
+                                            className="text-blue-600 underline"
+                                        >
+                                            Download PDF
+                                        </a>
+
+                                    </div>
                                 </div>
                             )}
                             <div className="font-bold">Career name:</div>
-                            {data.tk && (
-                                <div>
-                                    <p>{data.tk}</p>
-                                </div>
-                            )}
-
                             {data.en && (
                                 <div>
                                     <p>{data.en}</p>
-                                </div>
-                            )}
-
-                            {data.ru && (
-                                <div>
-                                    <p>{data.ru}</p>
                                 </div>
                             )}
                         </div>

@@ -7,7 +7,6 @@ import TokenTimer from "@/Components/TokenTimer";
 import Link from "next/link";
 import { EyeIcon, PlusCircleIcon } from "@heroicons/react/16/solid";
 
-// Тип для локации
 type Location = {
     id: number;
     location_tk: string;

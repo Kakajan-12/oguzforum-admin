@@ -53,7 +53,7 @@ const AddProject = () => {
                 console.log('добавлен!', data);
                 setImage(null);
                 setProjectId('');
-                router.push('/admin/gallery'); // После добавления слайда редирект
+                router.push('/admin/gallery');
             } else {
                 const errorText = await response.text();
                 console.error('Ошибка при добавлении:', errorText);
