@@ -32,7 +32,7 @@ const ContactNumbers = () => {
                 }
 
                 const response = await axios.get<Numbers[]>(
-                    `${process.env.NEXT_PUBLIC_API_URL}/api/contact-mails`,
+                    `${process.env.NEXT_PUBLIC_API_URL}/api/contact-numbers`,
                     { headers: { Authorization: `Bearer ${token}` } }
                 );
 

@@ -10,7 +10,6 @@ import {
     PresentationChartLineIcon,
     ListBulletIcon,
     QuestionMarkCircleIcon,
-    ClipboardDocumentCheckIcon,
     EnvelopeIcon,
     LinkIcon,
     CircleStackIcon,
@@ -27,7 +26,6 @@ const menuGroups = [
         key: "content",
         links: [
             { href: "/admin/sliders", label: "Sliders", icon: WindowIcon },
-            { href: "/admin/services", label: "Services", icon: ClipboardDocumentCheckIcon },
             { href: "/admin/faq", label: "FAQ", icon: QuestionMarkCircleIcon },
         ],
     },

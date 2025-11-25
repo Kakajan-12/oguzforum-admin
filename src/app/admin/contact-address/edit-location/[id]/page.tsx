@@ -10,7 +10,7 @@ const EditLocationAddress = () => {
     const { id } = useParams();
     const router = useRouter();
 
-    const [data, setData] = useState({ tk: '', en: '', ru: '', location_tk: '', location_en: '', location_ru: '', iframe_code: ''});
+    const [data, setData] = useState({ location_tk: '', location_en: '', location_ru: '', address_tk: '', address_en: '', address_ru: '', iframe_code: ''});
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
 
@@ -81,14 +81,16 @@ const EditLocationAddress = () => {
                     <form onSubmit={handleSubmit} className="space-y-6 bg-white p-6 rounded shadow">
                         <div className="mb-5">
                             <label className="block text-gray-700 font-semibold mb-2">Change location iframe code</label>
-                            <input
+                            <textarea
                                 name="iframe_code"
-                                type="text"
                                 value={data.iframe_code}
-                                onChange={handleChange}
+                                onChange={(e) =>
+                                    setData((prev) => ({...prev, iframe_code: e.target.value}))
+                                }
                                 required
-                                className="border border-gray-300 rounded p-2 w-full"
-                            />
+                                className="border border-gray-300 rounded p-2 w-full h-44"
+                            ></textarea>
+
 
                         </div>
                         <div className="tabs tabs-lift">
@@ -97,8 +99,8 @@ const EditLocationAddress = () => {
                                 <div className="mb-4">
                                     <label className="block font-semibold mb-2">Location</label>
                                     <input
-                                        name="tk"
-                                        value={data.tk}
+                                        name="location_tk"
+                                        value={data.location_tk}
                                         onChange={handleChange}
                                         type="text"
                                         required
@@ -109,8 +111,8 @@ const EditLocationAddress = () => {
                                 <div className="mb-4">
                                     <label className="block font-semibold mb-2">Address Location:</label>
                                     <input
-                                        name="location_tk"
-                                        value={data.location_tk}
+                                        name="address_tk"
+                                        value={data.address_tk}
                                         onChange={handleChange}
                                         type="text"
                                         required
@@ -124,8 +126,8 @@ const EditLocationAddress = () => {
                                 <div className="mb-4">
                                     <label className="block font-semibold mb-2">Location:</label>
                                     <input
-                                        name="en"
-                                        value={data.en}
+                                        name="location_en"
+                                        value={data.location_en}
                                         onChange={handleChange}
                                         type="text"
                                         required
@@ -135,8 +137,8 @@ const EditLocationAddress = () => {
                                 <div className="mb-4">
                                     <label className="block font-semibold mb-2">Address Location:</label>
                                     <input
-                                        name="location_en"
-                                        value={data.location_en}
+                                        name="address_en"
+                                        value={data.address_en}
                                         onChange={handleChange}
                                         type="text"
                                         required
@@ -150,8 +152,8 @@ const EditLocationAddress = () => {
                                 <div className="mb-4">
                                     <label className="block font-semibold mb-2">Location:</label>
                                     <input
-                                        name="ru"
-                                        value={data.ru}
+                                        name="location_ru"
+                                        value={data.location_ru}
                                         onChange={handleChange}
                                         type="text"
                                         required
@@ -161,8 +163,8 @@ const EditLocationAddress = () => {
                                 <div className="mb-4">
                                     <label className="block font-semibold mb-2">Address Location:</label>
                                     <input
-                                        name="location_ru"
-                                        value={data.location_ru}
+                                        name="address_ru"
+                                        value={data.address_ru}
                                         onChange={handleChange}
                                         type="text"
                                         required
