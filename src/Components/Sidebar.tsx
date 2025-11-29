@@ -19,6 +19,7 @@ import { VscReferences } from "react-icons/vsc";
 import {BsNewspaper} from "react-icons/bs";
 import {IoMailOpenSharp} from "react-icons/io5";
 import {FaPhone} from "react-icons/fa6";
+import {FaTelegramPlane} from "react-icons/fa";
 
 const menuGroups = [
     {
@@ -77,6 +78,13 @@ const menuGroups = [
             { href: "/admin/subscribes", label: "Subscribes", icon: EnvelopeIcon },
             { href: "/admin/cookie", label: "Cookie", icon: CircleStackIcon },
             { href: "/admin/privacy", label: "Privacy Policy", icon: ClipboardDocumentListIcon },
+        ],
+    },
+    {
+        title: "Telegram",
+        key: "telegram",
+        links: [
+            { href: "/admin/telegram", label: "Telegram Bot", icon: FaTelegramPlane},
         ],
     },
 ];
