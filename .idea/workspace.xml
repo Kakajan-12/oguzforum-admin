@@ -5,9 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5c7ad2a3-ff1a-443b-9552-33cbd5bad285" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/app/admin/telegram/page.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Components/Sidebar.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Components/Sidebar.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/admin/telegram/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/admin/telegram/page.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -91,7 +90,9 @@
       <workItem from="1764055156195" duration="879000" />
       <workItem from="1764056255063" duration="6000" />
       <workItem from="1764308654217" duration="2335000" />
-      <workItem from="1764393561939" duration="639000" />
+      <workItem from="1764393561939" duration="1355000" />
+      <workItem from="1764590885856" duration="854000" />
+      <workItem from="1764642735953" duration="1588000" />
     </task>
     <servers />
   </component>

@@ -1,6 +1,6 @@
 "use client";
 
-import React, {useState, useEffect, useCallback} from "react"; // ← ДОБАВИЛИ useCallback
+import React, {useState, useEffect, useCallback} from "react";
 import {useRouter} from "next/navigation";
 import Sidebar from "@/Components/Sidebar";
 import TokenTimer from "@/Components/TokenTimer";
@@ -12,6 +12,12 @@ interface TelegramAdmin {
     created_at: string;
 }
 
+interface ApiResponse {
+    success?: boolean;
+    error?: string;
+    message?: string;
+}
+
 export default function AdminTelegramPanel() {
     const [admins, setAdmins] = useState<TelegramAdmin[]>([]);
     const [newAdmin, setNewAdmin] = useState({username: "", fullName: ""});
@@ -19,25 +25,43 @@ export default function AdminTelegramPanel() {
     const [message, setMessage] = useState("");
     const router = useRouter();
 
+    // 🔧 Единая функция для получения токена
+    const getAuthToken = useCallback(() => {
+        // Проверяем оба варианта на всякий случай
+        const token = localStorage.getItem("auth_token") || localStorage.getItem("token");
+        if (!token) {
+            console.error("No auth token found in localStorage");
+            router.push("/");
+            return null;
+        }
+        return token;
+    }, [router]);
+
     const loadAdmins = useCallback(async () => {
         try {
-            const token = localStorage.getItem("auth_token");
-            if (!token) {
-                router.push("/");
-                return;
-            }
+            const token = getAuthToken();
+            if (!token) return;
 
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/all`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
             });
+
+            if (response.status === 401 || response.status === 403) {
+                console.error("Token invalid or expired");
+                localStorage.removeItem("auth_token");
+                localStorage.removeItem("token");
+                router.push("/");
+                return;
+            }
+
             const data = await response.json();
             setAdmins(data);
         } catch (error) {
             console.error("Error loading admins:", error);
         }
-    }, [router]);
+    }, [getAuthToken, router]);
 
     useEffect(() => {
         loadAdmins();
@@ -49,56 +73,115 @@ export default function AdminTelegramPanel() {
 
         setLoading(true);
         try {
+            const token = getAuthToken();
+            if (!token) return;
+
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/add`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify(newAdmin)
             });
 
-            const result = await response.json();
+            // 🔧 Детальный лог ответа
+            console.log("Add admin response status:", response.status);
+            const result: ApiResponse = await response.json();
+            console.log("Add admin response:", result);
 
-            if (result.success) {
-                setMessage(`Admin ${newAdmin.username} added`);
+            if (response.ok && result.success) {
+                setMessage(`✅ Admin ${newAdmin.username} added successfully`);
                 setNewAdmin({username: "", fullName: ""});
                 loadAdmins();
+
+                // Автоматически скрываем сообщение через 3 секунды
+                setTimeout(() => setMessage(""), 3000);
             } else {
-                setMessage(`Error: ${result.error}`);
+                setMessage(`❌ Error: ${result.error || result.message || "Unknown error"}`);
             }
-        } catch {
-            setMessage("Error adding admin");
+        } catch (error: unknown) {
+            console.error("Add admin error:", error);
+            const errorMessage = error instanceof Error ? error.message : "Unknown error occurred";
+            setMessage(`❌ Network error: ${errorMessage}`);
         } finally {
             setLoading(false);
         }
     };
 
     const removeAdmin = async (username: string) => {
-        if (!confirm(`Remove admin ${username}?`)) return;
+        if (!confirm(`Remove admin @${username}?`)) return;
 
         try {
+            const token = getAuthToken();
+            if (!token) return;
+
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/remove`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify({username})
             });
 
-            const result = await response.json();
+            console.log("Remove admin response status:", response.status);
+            const result: ApiResponse = await response.json();
+            console.log("Remove admin response:", result);
 
-            if (result.success) {
-                setMessage(`Admin ${username} removed`);
+            if (response.ok && result.success) {
+                setMessage(`✅ Admin @${username} removed successfully`);
                 loadAdmins();
+
+                setTimeout(() => setMessage(""), 3000);
             } else {
-                setMessage(`Error: ${result.error}`);
+                setMessage(`❌ Error: ${result.error || "Failed to remove admin"}`);
             }
-        } catch {
-            setMessage("Error removing admin");
+        } catch (error: unknown) {
+            console.error("Remove admin error:", error);
+            const errorMessage = error instanceof Error ? error.message : "Unknown error occurred";
+            setMessage(`❌ Network error: ${errorMessage}`);
         }
     };
+
+    // 🔧 Функция для проверки токена
+    const checkTokenValidity = useCallback(() => {
+        const token = getAuthToken();
+        if (!token) return false;
+
+        // Простая проверка формата токена
+        try {
+            const parts = token.split('.');
+            if (parts.length !== 3) {
+                console.error("Invalid token format");
+                return false;
+            }
+
+            // Можно добавить проверку истечения срока
+            const payload = JSON.parse(atob(parts[1]));
+            const isExpired = payload.exp && payload.exp * 1000 < Date.now();
+
+            if (isExpired) {
+                console.error("Token expired");
+                localStorage.removeItem("auth_token");
+                localStorage.removeItem("token");
+                router.push("/");
+                return false;
+            }
+
+            return true;
+        } catch (error) {
+            console.error("Token parsing error:", error);
+            return false;
+        }
+    }, [getAuthToken, router]);
+
+    useEffect(() => {
+        // Проверяем токен при загрузке компонента
+        if (!checkTokenValidity()) {
+            router.push("/");
+        }
+    }, [checkTokenValidity, router]);
 
     return (
         <div className="flex bg-gray-200 min-h-screen">
@@ -110,7 +193,9 @@ export default function AdminTelegramPanel() {
 
                     {message && (
                         <div className={`p-3 mb-4 rounded ${
-                            message.includes('') ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                            message.includes("✅") ? "bg-green-100 text-green-800" :
+                                message.includes("❌") ? "bg-red-100 text-red-800" :
+                                    "bg-blue-100 text-blue-800"
                         }`}>
                             {message}
                         </div>
@@ -130,7 +215,7 @@ export default function AdminTelegramPanel() {
                                     className="w-full p-2 border rounded"
                                     required
                                 />
-                                <p className="text-xs text-gray-500 mt-1">Admin username in Telegram</p>
+                                <p className="text-xs text-gray-500 mt-1">Telegram username without @</p>
                             </div>
 
                             <div>
@@ -142,13 +227,18 @@ export default function AdminTelegramPanel() {
                                     placeholder="Имя Фамилия"
                                     className="w-full p-2 border rounded"
                                 />
+                                <p className="text-xs text-gray-500 mt-1">Optional: admin&apos;s full name</p>
                             </div>
                         </div>
 
                         <button
                             type="submit"
                             disabled={loading || !newAdmin.username.trim()}
-                            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 disabled:opacity-50"
+                            className={`px-4 py-2 rounded transition-colors ${
+                                loading || !newAdmin.username.trim()
+                                    ? "bg-gray-400 cursor-not-allowed"
+                                    : "bg-blue-500 hover:bg-blue-600 text-white"
+                            }`}
                         >
                             {loading ? "Adding..." : "Add admin"}
                         </button>
@@ -161,21 +251,29 @@ export default function AdminTelegramPanel() {
                             <p className="text-gray-500">There are no registered admins.</p>
                         ) : (
                             <div className="space-y-3">
-                                {admins.map((admin) => (
-                                    <div key={admin.id || admin.username} className="flex items-center justify-between p-3 border rounded">
+                                {admins.map((admin, index) => (
+                                    <div key={`${admin.username}-${index}`} className="flex items-center justify-between p-3 border rounded hover:bg-gray-50">
                                         <div>
-                                            <div className="font-medium">@{admin.username}</div>
+                                            <div className="font-medium flex items-center">
+                                                <span className="text-gray-500 mr-2">@</span>
+                                                {admin.username}
+                                            </div>
                                             <div className="text-sm text-gray-600">
-                                                {admin.full_name || 'Not specified'}
+                                                {admin.full_name || "No full name provided"}
                                             </div>
                                             <div className="text-xs text-gray-500">
-                                                Добавлен: {new Date(admin.created_at).toLocaleDateString()}
+                                                Added: {new Date(admin.created_at).toLocaleDateString("en-US", {
+                                                year: "numeric",
+                                                month: "long",
+                                                day: "numeric"
+                                            })}
                                             </div>
                                         </div>
 
                                         <button
                                             onClick={() => removeAdmin(admin.username)}
-                                            className="bg-red-500 text-white px-3 py-1 rounded text-sm hover:bg-red-600"
+                                            className="bg-red-500 text-white px-3 py-1 rounded text-sm hover:bg-red-600 transition-colors"
+                                            title={`Remove @${admin.username}`}
                                         >
                                             Remove
                                         </button>
