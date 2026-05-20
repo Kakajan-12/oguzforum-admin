@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Sidebar from '@/Components/Sidebar';
 import TokenTimer from '@/Components/TokenTimer';
-import { Editor } from '@tinymce/tinymce-react';
+import TipTap from '@/Components/TipTapEditor';
 
 const AddFaq = () => {
     const router = useRouter();
@@ -68,13 +68,6 @@ const AddFaq = () => {
         }
     };
 
-    const editorConfig = {
-        height: 200,
-        menubar: false,
-        plugins: ['lists link image table code'],
-        toolbar: 'undo redo | styleselect | bold italic | alignleft aligncenter alignright | bullist numlist outdent indent | link image code',
-    };
-
     return (
         <div className="flex bg-gray-200 min-h-screen">
             <Sidebar />
@@ -104,12 +97,7 @@ const AddFaq = () => {
                                     </div>
                                     <div className="mb-4">
                                         <label className="block text-gray-700 font-semibold mb-2">Answer (TK):</label>
-                                        <Editor
-                                            apiKey="z9ht7p5r21591bc3n06i1yc7nmokdeorgawiso8vkpodbvp0"
-                                            init={editorConfig}
-                                            value={text_tk}
-                                            onEditorChange={(content) => setTextTk(content)}
-                                        />
+                                        <TipTap content={text_tk} onChange={setTextTk} />
                                     </div>
                                 </div>
 
@@ -127,12 +115,7 @@ const AddFaq = () => {
                                     </div>
                                     <div className="mb-4">
                                         <label className="block text-gray-700 font-semibold mb-2">Answer (EN):</label>
-                                        <Editor
-                                            apiKey="z9ht7p5r21591bc3n06i1yc7nmokdeorgawiso8vkpodbvp0"
-                                            init={editorConfig}
-                                            value={text_en}
-                                            onEditorChange={(content) => setTextEn(content)}
-                                        />
+                                        <TipTap content={text_en} onChange={setTextEn} />
                                     </div>
                                 </div>
 
@@ -150,12 +133,7 @@ const AddFaq = () => {
                                     </div>
                                     <div className="mb-4">
                                         <label className="block text-gray-700 font-semibold mb-2">Answer (RU):</label>
-                                        <Editor
-                                            apiKey="z9ht7p5r21591bc3n06i1yc7nmokdeorgawiso8vkpodbvp0"
-                                            init={editorConfig}
-                                            value={text_ru}
-                                            onEditorChange={(content) => setTextRu(content)}
-                                        />
+                                        <TipTap content={text_ru} onChange={setTextRu} />
                                     </div>
                                 </div>
                             </div>

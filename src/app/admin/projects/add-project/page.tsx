@@ -4,7 +4,7 @@ import {useState, useEffect, FormEvent} from 'react';
 import {useRouter} from 'next/navigation';
 import Sidebar from '@/Components/Sidebar';
 import TokenTimer from '@/Components/TokenTimer';
-import {Editor} from '@tinymce/tinymce-react';
+import TipTap from '@/Components/TipTapEditor';
 
 type Location = {
     id: number;
@@ -160,14 +160,6 @@ const AddProject = () => {
         } finally {
             setLoading(false);
         }
-    };
-
-    const editorConfig = {
-        height: 200,
-        menubar: false,
-        plugins: ['lists link image table code'],
-        toolbar: 'undo redo | styleselect | bold italic | alignleft aligncenter alignright | bullist numlist outdent indent | link image code',
-        content_css: '//www.tiny.cloud/css/codepen.min.css',
     };
 
     return (
@@ -375,21 +367,11 @@ const AddProject = () => {
                                     <div className="tab-content bg-base-100 border-base-300 p-6">
                                         <div className="mb-4">
                                             <label className="block text-gray-700 font-semibold mb-2">Title:</label>
-                                            <Editor
-                                                apiKey="z9ht7p5r21591bc3n06i1yc7nmokdeorgawiso8vkpodbvp0"
-                                                init={editorConfig}
-                                                value={tk}
-                                                onEditorChange={(content) => setTitleTk(content)}
-                                            />
+                                            <TipTap content={tk} onChange={setTitleTk} />
                                         </div>
                                         <div className="mb-4">
                                             <label className="block text-gray-700 font-semibold mb-2">Text:</label>
-                                            <Editor
-                                                apiKey="z9ht7p5r21591bc3n06i1yc7nmokdeorgawiso8vkpodbvp0"
-                                                init={editorConfig}
-                                                value={text_tk}
-                                                onEditorChange={(content) => setTextTk(content)}
-                                            />
+                                            <TipTap content={text_tk} onChange={setTextTk} />
                                         </div>
                                     </div>
 
@@ -397,21 +379,11 @@ const AddProject = () => {
                                     <div className="tab-content bg-base-100 border-base-300 p-6">
                                         <div className="mb-4">
                                             <label className="block text-gray-700 font-semibold mb-2">Title:</label>
-                                            <Editor
-                                                apiKey="z9ht7p5r21591bc3n06i1yc7nmokdeorgawiso8vkpodbvp0"
-                                                init={editorConfig}
-                                                value={en}
-                                                onEditorChange={(content) => setTitleEn(content)}
-                                            />
+                                            <TipTap content={en} onChange={setTitleEn} />
                                         </div>
                                         <div className="mb-4">
                                             <label className="block text-gray-700 font-semibold mb-2">Text:</label>
-                                            <Editor
-                                                apiKey="z9ht7p5r21591bc3n06i1yc7nmokdeorgawiso8vkpodbvp0"
-                                                init={editorConfig}
-                                                value={text_en}
-                                                onEditorChange={(content) => setTextEn(content)}
-                                            />
+                                            <TipTap content={text_en} onChange={setTextEn} />
                                         </div>
                                     </div>
 
@@ -419,21 +391,11 @@ const AddProject = () => {
                                     <div className="tab-content bg-base-100 border-base-300 p-6">
                                         <div className="mb-4">
                                             <label className="block text-gray-700 font-semibold mb-2">Title:</label>
-                                            <Editor
-                                                apiKey="z9ht7p5r21591bc3n06i1yc7nmokdeorgawiso8vkpodbvp0"
-                                                init={editorConfig}
-                                                value={ru}
-                                                onEditorChange={(content) => setTitleRu(content)}
-                                            />
+                                            <TipTap content={ru} onChange={setTitleRu} />
                                         </div>
                                         <div className="mb-4">
                                             <label className="block text-gray-700 font-semibold mb-2">Text:</label>
-                                            <Editor
-                                                apiKey="z9ht7p5r21591bc3n06i1yc7nmokdeorgawiso8vkpodbvp0"
-                                                init={editorConfig}
-                                                value={text_ru}
-                                                onEditorChange={(content) => setTextRu(content)}
-                                            />
+                                            <TipTap content={text_ru} onChange={setTextRu} />
                                         </div>
                                     </div>
                                 </div>

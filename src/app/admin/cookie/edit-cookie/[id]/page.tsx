@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import axios from 'axios';
-import { Editor } from '@tinymce/tinymce-react';
+import TipTap from '@/Components/TipTapEditor';
 import Sidebar from "@/Components/Sidebar";
 import TokenTimer from "@/Components/TokenTimer";
 import { DocumentIcon } from "@heroicons/react/16/solid";
@@ -90,16 +90,9 @@ const EditCookie = () => {
                             <div className="tab-content bg-base-100 border-base-300 p-6">
                                 <div className="mb-4">
                                     <label className="block font-semibold mb-2">Title</label>
-                                    <Editor
-                                        apiKey="z9ht7p5r21591bc3n06i1yc7nmokdeorgawiso8vkpodbvp0"
-                                        value={data.tk}
-                                        onEditorChange={(content) => handleEditorChange('tk', content)}
-                                        init={{
-                                            height: 200,
-                                            menubar: false,
-                                            plugins: 'link image code lists',
-                                            toolbar: 'undo redo | bold italic | alignleft aligncenter alignright | bullist numlist outdent indent | code',
-                                        }}
+                                    <TipTap
+                                        content={data.tk}
+                                        onChange={(content) => handleEditorChange('tk', content)}
                                     />
                                 </div>
                             </div>
@@ -108,16 +101,9 @@ const EditCookie = () => {
                             <div className="tab-content bg-base-100 border-base-300 p-6">
                                 <div className="mb-4">
                                     <label className="block font-semibold mb-2">Title:</label>
-                                    <Editor
-                                        apiKey="z9ht7p5r21591bc3n06i1yc7nmokdeorgawiso8vkpodbvp0"
-                                        value={data.en}
-                                        onEditorChange={(content) => handleEditorChange('en', content)}
-                                        init={{
-                                            height: 200,
-                                            menubar: false,
-                                            plugins: 'link image code lists',
-                                            toolbar: 'undo redo | bold italic | alignleft aligncenter alignright | bullist numlist outdent indent | code',
-                                        }}
+                                    <TipTap
+                                        content={data.en}
+                                        onChange={(content) => handleEditorChange('en', content)}
                                     />
                                 </div>
                             </div>
@@ -126,16 +112,9 @@ const EditCookie = () => {
                             <div className="tab-content bg-base-100 border-base-300 p-6">
                                 <div className="mb-4">
                                     <label className="block font-semibold mb-2">Title:</label>
-                                    <Editor
-                                        apiKey="z9ht7p5r21591bc3n06i1yc7nmokdeorgawiso8vkpodbvp0"
-                                        value={data.ru}
-                                        onEditorChange={(content) => handleEditorChange('ru', content)}
-                                        init={{
-                                            height: 200,
-                                            menubar: false,
-                                            plugins: 'link image code lists',
-                                            toolbar: 'undo redo | bold italic | alignleft aligncenter alignright | bullist numlist outdent indent | code',
-                                        }}
+                                    <TipTap
+                                        content={data.ru}
+                                        onChange={(content) => handleEditorChange('ru', content)}
                                     />
                                 </div>
                             </div>
