@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import axios from 'axios';
-import { Editor } from '@tinymce/tinymce-react';
+import TipTap from '@/Components/TipTapEditor';
 import Sidebar from "@/Components/Sidebar";
 import TokenTimer from "@/Components/TokenTimer";
 import { DocumentIcon } from "@heroicons/react/16/solid";
@@ -88,17 +88,10 @@ const EditFaq = () => {
             </div>
             <div className="mb-4">
                 <label className="block font-semibold mb-2">Answer ({lang}):</label>
-                <Editor
+                <TipTap
                     key={`${answerField}-editor`}
-                    apiKey="z9ht7p5r21591bc3n06i1yc7nmokdeorgawiso8vkpodbvp0"
-                    value={data[answerField]}
-                    onEditorChange={(content) => handleChange(answerField, content)}
-                    init={{
-                        height: 200,
-                        menubar: false,
-                        plugins: 'link image code lists',
-                        toolbar: 'undo redo | bold italic | alignleft aligncenter alignright | bullist numlist outdent indent | code',
-                    }}
+                    content={data[answerField]}
+                    onChange={(content) => handleChange(answerField, content)}
                 />
             </div>
         </div>
