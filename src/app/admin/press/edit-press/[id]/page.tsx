@@ -12,11 +12,11 @@ const EditPress = () => {
     const { id } = useParams();
     const router = useRouter();
 
-    const [data, setData] = useState({ tk: '', text_tk: '', en: '', text_en: '', ru: '', text_ru: '', image: '', date: '', press_cat_id: '' });
+    const [data, setData] = useState({ en: '', text_en: '', image: '', date: '', press_cat_id: '' });
     const [imageFile, setImageFile] = useState<File | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
-    const [categories, setCategories] = useState<{ id: number, cat_tk: string, cat_en: string, cat_ru: string }[]>([]);
+    const [categories, setCategories] = useState<{ id: number, cat_en: string }[]>([]);
 
     useEffect(() => {
         const fetchCategories = async () => {
@@ -78,12 +78,8 @@ const EditPress = () => {
             const token = localStorage.getItem('auth_token');
 
             const formData = new FormData();
-            formData.append("tk", data.tk);
             formData.append("en", data.en);
-            formData.append("ru", data.ru);
-            formData.append("text_tk", data.text_tk);
             formData.append("text_en", data.text_en);
-            formData.append("text_ru", data.text_ru);
             formData.append("press_cat_id", String(data.press_cat_id));
             formData.append("date", data.date);
 
@@ -186,59 +182,20 @@ const EditPress = () => {
                             </div>
                         </div>
 
-                        <div className="tabs tabs-lift">
-                            <input type="radio" name="my_tabs_3" className="tab" aria-label="Turkmen" defaultChecked/>
-                            <div className="tab-content bg-base-100 border-base-300 p-6">
-                                <div className="mb-4">
-                                    <label className="block font-semibold mb-2">Title</label>
-                                    <TipTap
-                                        content={data.tk}
-                                        onChange={(content) => handleEditorChange('tk', content)}
-                                    />
-                                </div>
-                                <div className="mb-4">
-                                    <label className="block font-semibold mb-2">Text:</label>
-                                    <TipTap
-                                        content={data.text_tk}
-                                        onChange={(content) => handleEditorChange('text_tk', content)}
-                                    />
-                                </div>
+                        <div className="space-y-4">
+                            <div className="mb-4">
+                                <label className="block font-semibold mb-2">Title:</label>
+                                <TipTap
+                                    content={data.en}
+                                    onChange={(content) => handleEditorChange('en', content)}
+                                />
                             </div>
-
-                            <input type="radio" name="my_tabs_3" className="tab" aria-label="English"/>
-                            <div className="tab-content bg-base-100 border-base-300 p-6">
-                                <div className="mb-4">
-                                    <label className="block font-semibold mb-2">Title:</label>
-                                    <TipTap
-                                        content={data.en}
-                                        onChange={(content) => handleEditorChange('en', content)}
-                                    />
-                                </div>
-                                <div className="mb-4">
-                                    <label className="block font-semibold mb-2">Text:</label>
-                                    <TipTap
-                                        content={data.text_en}
-                                        onChange={(content) => handleEditorChange('text_en', content)}
-                                    />
-                                </div>
-                            </div>
-
-                            <input type="radio" name="my_tabs_3" className="tab" aria-label="Russian"/>
-                            <div className="tab-content bg-base-100 border-base-300 p-6">
-                                <div className="mb-4">
-                                    <label className="block font-semibold mb-2">Title:</label>
-                                    <TipTap
-                                        content={data.ru}
-                                        onChange={(content) => handleEditorChange('ru', content)}
-                                    />
-                                </div>
-                                <div className="mb-4">
-                                    <label className="block font-semibold mb-2">Text:</label>
-                                    <TipTap
-                                        content={data.text_ru}
-                                        onChange={(content) => handleEditorChange('text_ru', content)}
-                                    />
-                                </div>
+                            <div className="mb-4">
+                                <label className="block font-semibold mb-2">Text:</label>
+                                <TipTap
+                                    content={data.text_en}
+                                    onChange={(content) => handleEditorChange('text_en', content)}
+                                />
                             </div>
                         </div>
 

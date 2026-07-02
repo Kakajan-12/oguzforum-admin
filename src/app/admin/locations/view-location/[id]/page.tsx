@@ -13,9 +13,7 @@ import {
 
 type LocationData = {
     id: number;
-    location_tk: string;
     location_en: string;
-    location_ru: string;
 };
 
 const ViewLocation = () => {
@@ -134,26 +132,9 @@ const ViewLocation = () => {
                     <div className="bg-white p-4 rounded-md border-gray-200 flex">
                         <div className="space-y-2 ml-4">
                             <div className="mb-10">
-                                <div className="font-bold text-lg mb-4">Turkmen</div>
-                                {data.location_tk && (
-                                    <div>
-                                        <div dangerouslySetInnerHTML={{ __html: data.location_tk }} />
-                                    </div>
-                                )}
-                            </div>
-                            <div className="mb-10">
-                                <div className="font-bold text-lg mb-4">English</div>
                                 {data.location_en && (
                                     <div>
                                         <div dangerouslySetInnerHTML={{ __html: data.location_en }} />
-                                    </div>
-                                )}
-                            </div>
-                            <div className="mb-10">
-                                <div className="font-bold text-lg mb-4">Russian</div>
-                                {data.location_ru && (
-                                    <div>
-                                        <div dangerouslySetInnerHTML={{ __html: data.location_ru }} />
                                     </div>
                                 )}
                             </div>

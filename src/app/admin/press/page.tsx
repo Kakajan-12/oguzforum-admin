@@ -11,15 +11,9 @@ import Image from "next/image";
 interface PressItem {
     id: number;
     image: string;
-    tk: string;
     en: string;
-    ru: string;
-    text_tk: string;
     text_en: string;
-    text_ru: string;
-    cat_tk: string;
     cat_en: string;
-    cat_ru: string;
 }
 
 const Press = () => {
@@ -80,16 +74,14 @@ const Press = () => {
                         <thead>
                         <tr>
                             <th className="py-2 px-4 border-b-2 border-gray-200 text-left text-gray-600">Image</th>
-                            <th className="py-2 px-4 border-b-2 border-gray-200 text-left text-gray-600">Turkmen</th>
                             <th className="py-2 px-4 border-b-2 border-gray-200 text-left text-gray-600">English</th>
-                            <th className="py-2 px-4 border-b-2 border-gray-200 text-left text-gray-600">Russian</th>
                             <th className="py-2 px-4 border-b-2 border-gray-200 text-left text-gray-600">View</th>
                         </tr>
                         </thead>
                         <tbody>
                         {press.length === 0 ? (
                             <tr>
-                                <td colSpan={5} className="text-center py-4">No data available</td>
+                                <td colSpan={3} className="text-center py-4">No data available</td>
                             </tr>
                         ) : (
                             press.map(press => (
@@ -104,13 +96,7 @@ const Press = () => {
 
                                     </td>
                                     <td className="py-4 px-4 border-b border-gray-200">
-                                        <div dangerouslySetInnerHTML={{__html: press.tk}}/>
-                                    </td>
-                                    <td className="py-4 px-4 border-b border-gray-200">
                                         <div dangerouslySetInnerHTML={{__html: press.en}}/>
-                                    </td>
-                                    <td className="py-4 px-4 border-b border-gray-200">
-                                        <div dangerouslySetInnerHTML={{__html: press.ru}}/>
                                     </td>
                                     <td className="py-4 px-4 border-b border-gray-200">
                                         <Link href={`/admin/press/view-press/${press.id}`}

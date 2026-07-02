@@ -10,7 +10,7 @@ const EditLocationAddress = () => {
     const { id } = useParams();
     const router = useRouter();
 
-    const [data, setData] = useState({ location_tk: '', location_en: '', location_ru: '', address_tk: '', address_en: '', address_ru: '', iframe_code: ''});
+    const [data, setData] = useState({ location_en: '', address_en: '', iframe_code: ''});
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
 
@@ -93,84 +93,28 @@ const EditLocationAddress = () => {
 
 
                         </div>
-                        <div className="tabs tabs-lift">
-                            <input type="radio" name="my_tabs_3" className="tab" aria-label="Turkmen" defaultChecked/>
-                            <div className="tab-content bg-base-100 border-base-300 p-6">
-                                <div className="mb-4">
-                                    <label className="block font-semibold mb-2">Location</label>
-                                    <input
-                                        name="location_tk"
-                                        value={data.location_tk}
-                                        onChange={handleChange}
-                                        type="text"
-                                        required
-                                        className="border border-gray-300 rounded p-2 w-full"
-                                    />
-
-                                </div>
-                                <div className="mb-4">
-                                    <label className="block font-semibold mb-2">Address Location:</label>
-                                    <input
-                                        name="address_tk"
-                                        value={data.address_tk}
-                                        onChange={handleChange}
-                                        type="text"
-                                        required
-                                        className="border border-gray-300 rounded p-2 w-full"
-                                    />
-                                </div>
+                        <div className="bg-base-100 border border-gray-200 rounded-md p-6">
+                            <div className="mb-4">
+                                <label className="block font-semibold mb-2">Location:</label>
+                                <input
+                                    name="location_en"
+                                    value={data.location_en}
+                                    onChange={handleChange}
+                                    type="text"
+                                    required
+                                    className="border border-gray-300 rounded p-2 w-full"
+                                />
                             </div>
-
-                            <input type="radio" name="my_tabs_3" className="tab" aria-label="English"/>
-                            <div className="tab-content bg-base-100 border-base-300 p-6">
-                                <div className="mb-4">
-                                    <label className="block font-semibold mb-2">Location:</label>
-                                    <input
-                                        name="location_en"
-                                        value={data.location_en}
-                                        onChange={handleChange}
-                                        type="text"
-                                        required
-                                        className="border border-gray-300 rounded p-2 w-full"
-                                    />
-                                </div>
-                                <div className="mb-4">
-                                    <label className="block font-semibold mb-2">Address Location:</label>
-                                    <input
-                                        name="address_en"
-                                        value={data.address_en}
-                                        onChange={handleChange}
-                                        type="text"
-                                        required
-                                        className="border border-gray-300 rounded p-2 w-full"
-                                    />
-                                </div>
-                            </div>
-
-                            <input type="radio" name="my_tabs_3" className="tab" aria-label="Russian"/>
-                            <div className="tab-content bg-base-100 border-base-300 p-6">
-                                <div className="mb-4">
-                                    <label className="block font-semibold mb-2">Location:</label>
-                                    <input
-                                        name="location_ru"
-                                        value={data.location_ru}
-                                        onChange={handleChange}
-                                        type="text"
-                                        required
-                                        className="border border-gray-300 rounded p-2 w-full"
-                                    />
-                                </div>
-                                <div className="mb-4">
-                                    <label className="block font-semibold mb-2">Address Location:</label>
-                                    <input
-                                        name="address_ru"
-                                        value={data.address_ru}
-                                        onChange={handleChange}
-                                        type="text"
-                                        required
-                                        className="border border-gray-300 rounded p-2 w-full"
-                                    />
-                                </div>
+                            <div className="mb-4">
+                                <label className="block font-semibold mb-2">Address Location:</label>
+                                <input
+                                    name="address_en"
+                                    value={data.address_en}
+                                    onChange={handleChange}
+                                    type="text"
+                                    required
+                                    className="border border-gray-300 rounded p-2 w-full"
+                                />
                             </div>
                         </div>
 

@@ -13,12 +13,8 @@ import {
 
 type LocationData = {
     id: number;
-    address_tk: string;
     address_en: string;
-    address_ru: string;
-    location_tk: string;
     location_en: string;
-    location_ru: string;
     iframe_code: string;
 };
 
@@ -146,22 +142,6 @@ const ViewLocation = () => {
                         </div>
                         <div className="space-y-2 ml-4">
                             <div className="mb-10">
-                                <div className="font-bold text-lg mb-4">Turkmen</div>
-                                {data.address_tk && (
-                                    <div className="flex space-x-2">
-                                        <div className="font-semibold">Address:</div>
-                                        <div dangerouslySetInnerHTML={{__html: data.address_tk}}/>
-                                    </div>
-                                )}
-                                {data.location_tk && (
-                                    <div className="flex space-x-2">
-                                        <div className="font-semibold">Location:</div>
-                                        <div dangerouslySetInnerHTML={{__html: data.location_tk}}/>
-                                    </div>
-                                )}
-                            </div>
-                            <div className="mb-10">
-                                <div className="font-bold text-lg mb-4">English</div>
                                 {data.address_en && (
                                     <div className="flex space-x-2">
                                         <div className="font-semibold">Address:</div>
@@ -172,21 +152,6 @@ const ViewLocation = () => {
                                     <div className="flex space-x-2">
                                         <div className="font-semibold">Location:</div>
                                         <div dangerouslySetInnerHTML={{__html: data.location_en}}/>
-                                    </div>
-                                )}
-                            </div>
-                            <div className="mb-10">
-                                <div className="font-bold text-lg mb-4">Russian</div>
-                                {data.address_ru && (
-                                    <div className="flex space-x-2">
-                                        <div className="font-semibold">Address:</div>
-                                        <div dangerouslySetInnerHTML={{__html: data.address_ru}}/>
-                                    </div>
-                                )}
-                                {data.location_ru && (
-                                    <div className="flex space-x-2">
-                                        <div className="font-semibold">Location:</div>
-                                        <div dangerouslySetInnerHTML={{__html: data.location_ru}}/>
                                     </div>
                                 )}
                             </div>

@@ -6,9 +6,7 @@ import Sidebar from '@/Components/Sidebar';
 import TokenTimer from '@/Components/TokenTimer';
 
 const AddLocation = () => {
-    const [location_tk, setLocationTk] = useState('');
     const [location_en, setLocationEn] = useState('');
-    const [location_ru, setLocationRu] = useState('');
     const router = useRouter();
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -21,9 +19,7 @@ const AddLocation = () => {
         }
 
         const payload = {
-            location_tk,
             location_en,
-            location_ru,
         };
 
         try {
@@ -39,9 +35,7 @@ const AddLocation = () => {
             if (response.ok) {
                 const data = await response.json();
                 console.log('Проекты добавлены!', data);
-                setLocationTk('');
                 setLocationEn('');
-                setLocationRu('');
                 router.push('/admin/locations');
             } else {
                 const errorText = await response.text();
@@ -65,32 +59,10 @@ const AddLocation = () => {
                         <h2 className="text-2xl font-bold mb-4">Add project locations</h2>
 
                         <div className="mb-4">
-                            <label className="block text-gray-700 font-semibold mb-2">Turkmen:</label>
-                            <input
-                                value={location_tk}
-                                onChange={(e) => setLocationTk(e.target.value)}
-                                type="text"
-                                required
-                                className="border border-gray-300 rounded p-2 w-full"
-                            />
-                        </div>
-
-                        <div className="mb-4">
                             <label className="block text-gray-700 font-semibold mb-2">English:</label>
                             <input
                                 value={location_en}
                                 onChange={(e) => setLocationEn(e.target.value)}
-                                type="text"
-                                required
-                                className="border border-gray-300 rounded p-2 w-full"
-                            />
-                        </div>
-
-                        <div className="mb-4">
-                            <label className="block text-gray-700 font-semibold mb-2">Russian:</label>
-                            <input
-                                value={location_ru}
-                                onChange={(e) => setLocationRu(e.target.value)}
                                 type="text"
                                 required
                                 className="border border-gray-300 rounded p-2 w-full"

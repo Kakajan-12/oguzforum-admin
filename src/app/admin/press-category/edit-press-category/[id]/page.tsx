@@ -10,7 +10,7 @@ const EditPressCategory = () => {
     const { id } = useParams();
     const router = useRouter();
 
-    const [data, setData] = useState({ cat_tk: '', cat_en: '', cat_ru: '' });
+    const [data, setData] = useState({ cat_en: '' });
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
 
@@ -69,32 +69,10 @@ const EditPressCategory = () => {
                     <h1 className="text-2xl font-bold mb-4">Edit Press Category</h1>
                     <form onSubmit={handleSubmit} className="space-y-6 bg-white p-6 rounded shadow">
                         <div className="mb-4">
-                            <label className="block text-gray-700 font-semibold mb-2">Turkmen:</label>
-                            <input
-                                name="cat_tk"
-                                value={data.cat_tk}
-                                onChange={handleChange}
-                                type="text"
-                                required
-                                className="border border-gray-300 rounded p-2 w-full"
-                            />
-                        </div>
-                        <div className="mb-4">
                             <label className="block text-gray-700 font-semibold mb-2">English:</label>
                             <input
                                 name="cat_en"
                                 value={data.cat_en}
-                                onChange={handleChange}
-                                type="text"
-                                required
-                                className="border border-gray-300 rounded p-2 w-full"
-                            />
-                        </div>
-                        <div className="mb-4">
-                            <label className="block text-gray-700 font-semibold mb-2">Russian:</label>
-                            <input
-                                name="cat_ru"
-                                value={data.cat_ru}
                                 onChange={handleChange}
                                 type="text"
                                 required

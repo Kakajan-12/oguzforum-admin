@@ -13,9 +13,7 @@ import {
 
 type Data = {
     id: number;
-    type_tk: string;
     type_en: string;
-    type_ru: string;
 };
 
 const ViewTypes = () => {
@@ -134,26 +132,9 @@ const ViewTypes = () => {
                     <div className="bg-white p-4 rounded-md border-gray-200 flex">
                         <div className="space-y-2 ml-4">
                             <div className="mb-10">
-                                <div className="font-bold text-lg mb-4">Turkmen</div>
-                                {data.type_tk && (
-                                    <div>
-                                        <div dangerouslySetInnerHTML={{ __html: data.type_tk }} />
-                                    </div>
-                                )}
-                            </div>
-                            <div className="mb-10">
-                                <div className="font-bold text-lg mb-4">English</div>
                                 {data.type_en && (
                                     <div>
                                         <div dangerouslySetInnerHTML={{ __html: data.type_en }} />
-                                    </div>
-                                )}
-                            </div>
-                            <div className="mb-10">
-                                <div className="font-bold text-lg mb-4">Russian</div>
-                                {data.type_ru && (
-                                    <div>
-                                        <div dangerouslySetInnerHTML={{ __html: data.type_ru }} />
                                     </div>
                                 )}
                             </div>

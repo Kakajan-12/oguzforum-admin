@@ -7,12 +7,8 @@ import TokenTimer from '@/Components/TokenTimer';
 
 const ContactLocation = () => {
     const [isClient, setIsClient] = useState(false);
-    const [address_tk, setAddressTk] = useState('');
     const [address_en, setAddressEn] = useState('');
-    const [address_ru, setAddressRu] = useState('');
-    const [location_tk, setLocationTk] = useState('');
     const [location_en, setLocationEn] = useState('');
-    const [location_ru, setLocationRu] = useState('');
     const [iframe_code, setIframe] = useState('')
     const router = useRouter();
 
@@ -30,12 +26,8 @@ const ContactLocation = () => {
         }
 
         const payload = {
-            address_tk,
             address_en,
-            address_ru,
-            location_tk,
             location_en,
-            location_ru,
             iframe_code,
         };
 
@@ -52,12 +44,8 @@ const ContactLocation = () => {
             if (response.ok) {
                 const data = await response.json();
                 console.log(' добавлены!', data);
-                setAddressTk('');
                 setAddressEn('');
-                setAddressRu('');
-                setLocationTk('');
                 setLocationEn('');
-                setLocationRu('');
                 setIframe('')
                 router.push('/admin/contact-address');
             } else {
@@ -93,83 +81,28 @@ const ContactLocation = () => {
                         </div>
 
                         {isClient && (
-                            <>
-                                <div className="tabs tabs-lift">
-                                <input type="radio" name="my_tabs_3" className="tab" aria-label="Turkmen"
-                                           defaultChecked/>
-                                    <div className="tab-content bg-base-100 border-base-300 p-6">
-                                        <div className="mb-4">
-                                            <label className="block text-gray-700 font-semibold mb-2">Location:</label>
-                                            <input
-                                                value={location_tk}
-                                                onChange={(e) => setLocationTk(e.target.value)}
-                                                type="text"
-                                                required
-                                                className="border border-gray-300 rounded p-2 w-full"
-                                            />
-                                        </div>
-                                        <div className="mb-4">
-                                            <label className="block text-gray-700 font-semibold mb-2">Location
-                                                Address:</label>
-                                            <input
-                                                value={address_tk}
-                                                onChange={(e) => setAddressTk(e.target.value)}
-                                                type="text"
-                                                required
-                                                className="border border-gray-300 rounded p-2 w-full"
-                                            />
-                                        </div>
-                                    </div>
-
-                                    <input type="radio" name="my_tabs_3" className="tab" aria-label="English"/>
-                                    <div className="tab-content bg-base-100 border-base-300 p-6">
-                                        <div className="mb-4">
-                                            <label className="block text-gray-700 font-semibold mb-2">Location:</label>
-                                            <input
-                                                value={location_en}
-                                                onChange={(e) => setLocationEn(e.target.value)}
-                                                type="text"
-                                                required
-                                                className="border border-gray-300 rounded p-2 w-full"
-                                            />
-                                        </div>
-                                        <div className="mb-4">
-                                            <label className="block text-gray-700 font-semibold mb-2">Location Address:</label>
-                                            <input
-                                                value={address_en}
-                                                onChange={(e) => setAddressEn(e.target.value)}
-                                                type="text"
-                                                required
-                                                className="border border-gray-300 rounded p-2 w-full"
-                                            />
-                                        </div>
-                                    </div>
-
-                                    <input type="radio" name="my_tabs_3" className="tab" aria-label="Russian"/>
-                                    <div className="tab-content bg-base-100 border-base-300 p-6">
-                                        <div className="mb-4">
-                                            <label className="block text-gray-700 font-semibold mb-2">Location:</label>
-                                            <input
-                                                value={location_ru}
-                                                onChange={(e) => setLocationRu(e.target.value)}
-                                                type="text"
-                                                required
-                                                className="border border-gray-300 rounded p-2 w-full"
-                                            />
-                                        </div>
-                                        <div className="mb-4">
-                                            <label className="block text-gray-700 font-semibold mb-2">Location Address:</label>
-                                            <input
-                                                value={address_ru}
-                                                onChange={(e) => setAddressRu(e.target.value)}
-                                                type="text"
-                                                required
-                                                className="border border-gray-300 rounded p-2 w-full"
-                                            />
-                                        </div>
-                                    </div>
+                            <div className="bg-base-100 border border-gray-200 rounded-md p-6">
+                                <div className="mb-4">
+                                    <label className="block text-gray-700 font-semibold mb-2">Location:</label>
+                                    <input
+                                        value={location_en}
+                                        onChange={(e) => setLocationEn(e.target.value)}
+                                        type="text"
+                                        required
+                                        className="border border-gray-300 rounded p-2 w-full"
+                                    />
                                 </div>
-                            </>
+                                <div className="mb-4">
+                                    <label className="block text-gray-700 font-semibold mb-2">Location Address:</label>
+                                    <input
+                                        value={address_en}
+                                        onChange={(e) => setAddressEn(e.target.value)}
+                                        type="text"
+                                        required
+                                        className="border border-gray-300 rounded p-2 w-full"
+                                    />
+                                </div>
+                            </div>
                         )}
 
                         <button

@@ -13,9 +13,7 @@ import {
 
 type NewsCategory = {
     id: string;
-    cat_tk: string;
     cat_en: string;
-    cat_ru: string;
 };
 
 const ViewNewsCategory = () => {
@@ -134,29 +132,10 @@ const ViewNewsCategory = () => {
                     <div className="bg-white p-4 rounded-md border-gray-200 flex">
                         <div className="space-y-2 ml-4">
                             <div className="mb-10">
-                                <div className="font-bold text-lg mb-4">Turkmen</div>
-                                {data.cat_tk && (
-                                    <div>
-                                        <strong>Category:</strong>
-                                        <div dangerouslySetInnerHTML={{ __html: data.cat_tk }} />
-                                    </div>
-                                )}
-                            </div>
-                            <div className="mb-10">
-                                <div className="font-bold text-lg mb-4">English</div>
                                 {data.cat_en && (
                                     <div>
                                         <strong>Category:</strong>
                                         <div dangerouslySetInnerHTML={{ __html: data.cat_en }} />
-                                    </div>
-                                )}
-                            </div>
-                            <div className="mb-10">
-                                <div className="font-bold text-lg mb-4">Russian</div>
-                                {data.cat_ru && (
-                                    <div>
-                                        <strong>Category:</strong>
-                                        <div dangerouslySetInnerHTML={{ __html: data.cat_ru }} />
                                     </div>
                                 )}
                             </div>

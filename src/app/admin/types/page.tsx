@@ -9,9 +9,7 @@ import { EyeIcon, PlusCircleIcon } from "@heroicons/react/16/solid";
 
 type Type = {
     id: number;
-    type_tk: string;
     type_en: string;
-    type_ru: string;
 };
 
 const Types = () => {
@@ -75,28 +73,20 @@ const Types = () => {
                     <table className="min-w-full bg-white border border-gray-200 rounded-lg">
                         <thead>
                         <tr>
-                            <th className="py-2 px-4 border-b-2 border-gray-200 text-left text-gray-600">Turkmen</th>
                             <th className="py-2 px-4 border-b-2 border-gray-200 text-left text-gray-600">English</th>
-                            <th className="py-2 px-4 border-b-2 border-gray-200 text-left text-gray-600">Russian</th>
                             <th className="py-2 px-4 border-b-2 border-gray-200 text-left text-gray-600">View</th>
                         </tr>
                         </thead>
                         <tbody>
                         {types.length === 0 ? (
                             <tr>
-                                <td colSpan={4} className="text-center py-4">No types available</td>
+                                <td colSpan={2} className="text-center py-4">No types available</td>
                             </tr>
                         ) : (
                             types.map((type) => (
                                 <tr key={type.id}>
                                     <td className="py-4 px-4 border-b border-gray-200">
-                                        <div dangerouslySetInnerHTML={{ __html: type.type_tk }} />
-                                    </td>
-                                    <td className="py-4 px-4 border-b border-gray-200">
                                         <div dangerouslySetInnerHTML={{ __html: type.type_en }} />
-                                    </td>
-                                    <td className="py-4 px-4 border-b border-gray-200">
-                                        <div dangerouslySetInnerHTML={{ __html: type.type_ru }} />
                                     </td>
                                     <td className="py-4 px-4 border-b border-gray-200">
                                         <Link

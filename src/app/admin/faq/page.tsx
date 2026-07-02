@@ -9,9 +9,7 @@ import { EyeIcon, PlusCircleIcon } from "@heroicons/react/16/solid";
 
 type FaqItem = {
     id: number;
-    tk: string;
     en: string;
-    ru: string;
 };
 
 const Faq = () => {
@@ -77,9 +75,7 @@ const Faq = () => {
                         <table className="min-w-full bg-white border border-gray-200 rounded-lg mt-4">
                             <thead>
                             <tr>
-                                <th className="py-2 px-4 border-b-2 border-gray-200 text-left text-gray-600">Turkmen</th>
-                                <th className="py-2 px-4 border-b-2 border-gray-200 text-left text-gray-600">English</th>
-                                <th className="py-2 px-4 border-b-2 border-gray-200 text-left text-gray-600">Russian</th>
+                                <th className="py-2 px-4 border-b-2 border-gray-200 text-left text-gray-600">Question</th>
                                 <th className="py-2 px-4 border-b-2 border-gray-200 text-left text-gray-600">View</th>
                             </tr>
                             </thead>
@@ -87,13 +83,7 @@ const Faq = () => {
                             {faq.map((item) => (
                                 <tr key={item.id}>
                                     <td className="py-4 px-4 border-b border-gray-200">
-                                        <div dangerouslySetInnerHTML={{ __html: item.tk }} />
-                                    </td>
-                                    <td className="py-4 px-4 border-b border-gray-200">
                                         <div dangerouslySetInnerHTML={{ __html: item.en }} />
-                                    </td>
-                                    <td className="py-4 px-4 border-b border-gray-200">
-                                        <div dangerouslySetInnerHTML={{ __html: item.ru }} />
                                     </td>
                                     <td className="py-4 px-4 border-b border-gray-200">
                                         <Link

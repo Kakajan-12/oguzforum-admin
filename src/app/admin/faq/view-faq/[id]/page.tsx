@@ -13,12 +13,8 @@ import {
 
 type FaqType = {
     id: number;
-    tk?: string;
     en?: string;
-    ru?: string;
-    text_tk?: string;
     text_en?: string;
-    text_ru?: string;
 };
 
 const ViewFaq = () => {
@@ -140,31 +136,20 @@ const ViewFaq = () => {
                     </div>
 
                     <div className="bg-white p-6 rounded-md shadow-md mt-4">
-                        {['Turkmen', 'English', 'Russian'].map((lang, i) => {
-                            const prefix = ['tk', 'en', 'ru'][i] as 'tk' | 'en' | 'ru';
-                            const answerKey = `text_${prefix}` as keyof FaqType;
-                            const questionKey = prefix as keyof FaqType;
-
-                            if (!data[questionKey] && !data[answerKey]) return null;
-
-                            return (
-                                <div key={prefix} className="mb-10">
-                                    <h3 className="text-lg font-semibold mb-3">{lang}</h3>
-                                    {data[questionKey] && (
-                                        <div className="mb-2">
-                                            <strong>Question:</strong>
-                                            <div dangerouslySetInnerHTML={{ __html: data[questionKey] || '' }} />
-                                        </div>
-                                    )}
-                                    {data[answerKey] && (
-                                        <div>
-                                            <strong>Answer:</strong>
-                                            <div dangerouslySetInnerHTML={{ __html: data[answerKey] || '' }} />
-                                        </div>
-                                    )}
+                        <div className="mb-10">
+                            {data.en && (
+                                <div className="mb-2">
+                                    <strong>Question:</strong>
+                                    <div dangerouslySetInnerHTML={{ __html: data.en || '' }} />
                                 </div>
-                            );
-                        })}
+                            )}
+                            {data.text_en && (
+                                <div>
+                                    <strong>Answer:</strong>
+                                    <div dangerouslySetInnerHTML={{ __html: data.text_en || '' }} />
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </div>
 

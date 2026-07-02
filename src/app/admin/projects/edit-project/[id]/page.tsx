@@ -3,6 +3,7 @@ import React, {useEffect, useState} from 'react';
 import {useParams, useRouter} from 'next/navigation';
 import axios from 'axios';
 import TipTap from '@/Components/TipTapEditor';
+import GalleryPicker from '@/Components/GalleryPicker';
 import Sidebar from "@/Components/Sidebar";
 import TokenTimer from "@/Components/TokenTimer";
 import {DocumentIcon} from "@heroicons/react/16/solid";
@@ -10,10 +11,14 @@ import Image from "next/image";
 
 interface Organizer {
     id?: number;
-    organizer_tk: string;
     organizer_en: string;
-    organizer_ru: string;
     organizer_logo?: string | null;
+}
+
+interface Participant {
+    id?: number;
+    participant_en: string;
+    participant_logo?: string | null;
 }
 
 
@@ -24,12 +29,8 @@ const EditProject = () => {
     const [data, setData] = useState({
         image: '',
         logo: '',
-        tk: '',
         en: '',
-        ru: '',
-        text_tk: '',
         text_en: '',
-        text_ru: '',
         date:"",
         end_date:"",
         link:"",
@@ -46,32 +47,43 @@ const EditProject = () => {
     const [imagePath, setImagePath] = useState('');
     const [logoFile, setLogoFile] = useState<File | null>(null);
     const [logoPath, setLogoPath] = useState('');
+    const [galleryImages, setGalleryImages] = useState<{ id: number; image: string }[]>([]);
+    const [newGallery, setNewGallery] = useState<File[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [locations, setLocations] = useState<{
         id: number,
-        location_tk: string,
-        location_en: string,
-        location_ru: string
+        location_en: string
     }[]>([]);
     const [types, setTypes] = useState<{
         id: number,
-        type_tk: string,
-        type_en: string,
-        type_ru: string
+        type_en: string
     }[]>([]);
     const [organizers, setOrganizers] = useState<
-        { id?: number; organizer_tk: string; organizer_en: string; organizer_ru: string; organizer_logo?: File | string | null; _deleted?: boolean }[]
+        { id?: number; organizer_en: string; organizer_logo?: File | string | null; _deleted?: boolean }[]
     >([]);
 
     const addOrganizer = () =>
-        setOrganizers(prev => [...prev, { organizer_tk: '', organizer_en: '', organizer_ru: '', organizer_logo: null }]);
+        setOrganizers(prev => [...prev, { organizer_en: '', organizer_logo: null }]);
 
     const removeOrganizer = (index: number) =>
         setOrganizers(prev => prev.map((o, i) => i === index ? { ...o, _deleted: true } : o));
 
     const updateOrganizer = (index: number, field: string, value: string | File | null) =>
         setOrganizers(prev => prev.map((o, i) => (i === index ? { ...o, [field]: value } : o)));
+
+    const [participants, setParticipants] = useState<
+        { id?: number; participant_en: string; participant_logo?: File | string | null; _deleted?: boolean }[]
+    >([]);
+
+    const addParticipant = () =>
+        setParticipants(prev => [...prev, { participant_en: '', participant_logo: null }]);
+
+    const removeParticipant = (index: number) =>
+        setParticipants(prev => prev.map((p, i) => i === index ? { ...p, _deleted: true } : p));
+
+    const updateParticipant = (index: number, field: string, value: string | File | null) =>
+        setParticipants(prev => prev.map((p, i) => (i === index ? { ...p, [field]: value } : p)));
 
 
 
@@ -129,16 +141,23 @@ const EditProject = () => {
 
                     setImagePath(rawData.image);
                     setLogoPath(rawData.logo);
+                    setGalleryImages(rawData.images || []);
 
                     if (Array.isArray(rawData.organizers)) {
                         const formattedOrganizers = rawData.organizers.map((org: Organizer) => ({
                             id: org.id,
-                            organizer_tk: org.organizer_tk || '',
                             organizer_en: org.organizer_en || '',
-                            organizer_ru: org.organizer_ru || '',
                             organizer_logo: org.organizer_logo || null,
                         }));
                         setOrganizers(formattedOrganizers);
+                    }
+
+                    if (Array.isArray(rawData.participants)) {
+                        setParticipants(rawData.participants.map((p: Participant) => ({
+                            id: p.id,
+                            participant_en: p.participant_en || '',
+                            participant_logo: p.participant_logo || null,
+                        })));
                     }
 
                     setLoading(false);
@@ -174,12 +193,8 @@ const EditProject = () => {
             if (imageFile) formData.append("image", imageFile);
             if (logoFile) formData.append("logo", logoFile);
 
-            formData.append("tk", data.tk);
             formData.append("en", data.en);
-            formData.append("ru", data.ru);
-            formData.append("text_tk", data.text_tk);
             formData.append("text_en", data.text_en);
-            formData.append("text_ru", data.text_ru);
             formData.append("date", data.date);
             formData.append("end_date", data.end_date);
             formData.append("link", data.link);
@@ -199,6 +214,26 @@ const EditProject = () => {
                 }
             });
 
+            // Participants: keep existing logo paths as strings, mark new ones
+            // as null; upload files in the same (active) order so the backend
+            // can pair each new file with its (logo-less) entry.
+            const activeParticipants = participants.filter(p => !p._deleted);
+            formData.append(
+                "participants",
+                JSON.stringify(activeParticipants.map(p => ({
+                    participant_en: p.participant_en,
+                    participant_logo: typeof p.participant_logo === 'string' ? p.participant_logo : null,
+                })))
+            );
+            activeParticipants.forEach(p => {
+                if (p.participant_logo instanceof File) {
+                    formData.append("participant_logo", p.participant_logo);
+                }
+            });
+
+            // Новые изображения галереи (дозаписываются к существующим)
+            newGallery.forEach((f) => formData.append("gallery", f));
+
             await axios.put(
                 `${process.env.NEXT_PUBLIC_API_URL}/api/projects/${id}`,
                 formData,
@@ -217,6 +252,18 @@ const EditProject = () => {
         }
     };
 
+
+    const deleteGalleryImage = async (imageId: number) => {
+        try {
+            const token = localStorage.getItem('auth_token');
+            await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/api/projects/image/${imageId}`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            setGalleryImages((prev) => prev.filter((img) => img.id !== imageId));
+        } catch (err) {
+            console.error('Ошибка при удалении изображения:', err);
+        }
+    };
 
     if (loading) return <p>Загрузка...</p>;
     if (error) return <p>{error}</p>;
@@ -332,7 +379,7 @@ const EditProject = () => {
                                     <option value="">Select category</option>
                                     {locations.map((loc) => (
                                         <option key={loc.id} value={String(loc.id)}>
-                                            {loc.location_en} / {loc.location_tk} / {loc.location_ru}
+                                            {loc.location_en}
                                         </option>
                                     ))}
                                 </select>
@@ -352,7 +399,7 @@ const EditProject = () => {
                                     <option value="">Select type</option>
                                     {types.map((type) => (
                                         <option key={type.id} value={String(type.id)}>
-                                            {type.type_en} / {type.type_tk} / {type.type_ru}
+                                            {type.type_en}
                                         </option>
                                     ))}
                                 </select>
@@ -421,60 +468,21 @@ const EditProject = () => {
                             </div>
                         </div>
 
-                        <div className="tabs tabs-lift">
-                            <input type="radio" name="my_tabs_3" className="tab" aria-label="Turkmen" defaultChecked/>
-                            <div className="tab-content bg-base-100 border-base-300 p-6">
-                                <div className="mb-4">
-                                    <label className="block font-semibold mb-2">Title:</label>
-                                    <TipTap
-                                        content={data.tk || ''}
-                                        onChange={(content) => handleEditorChange('tk', content)}
-                                    />
-                                </div>
-
-                                <div className="mb-4">
-                                    <label className="block font-semibold mb-2">Text:</label>
-                                    <TipTap
-                                        content={data.text_tk || ''}
-                                        onChange={(content) => handleEditorChange('text_tk', content)}
-                                    />
-                                </div>
+                        <div className="bg-base-100 border border-gray-200 rounded-md p-6">
+                            <div className="mb-4">
+                                <label className="block font-semibold mb-2">Title:</label>
+                                <TipTap
+                                    content={data.en || ''}
+                                    onChange={(content) => handleEditorChange('en', content)}
+                                />
                             </div>
-                            <input type="radio" name="my_tabs_3" className="tab" aria-label="English"/>
-                            <div className="tab-content bg-base-100 border-base-300 p-6">
-                                <div className="mb-4">
-                                    <label className="block font-semibold mb-2">Title:</label>
-                                    <TipTap
-                                        content={data.en || ''}
-                                        onChange={(content) => handleEditorChange('en', content)}
-                                    />
-                                </div>
 
-                                <div className="mb-4">
-                                    <label className="block font-semibold mb-2">Text:</label>
-                                    <TipTap
-                                        content={data.text_en || ''}
-                                        onChange={(content) => handleEditorChange('text_en', content)}
-                                    />
-                                </div>
-                            </div>
-                            <input type="radio" name="my_tabs_3" className="tab" aria-label="Russian"/>
-                            <div className="tab-content bg-base-100 border-base-300 p-6">
-                                <div className="mb-4">
-                                    <label className="block font-semibold mb-2">Title:</label>
-                                    <TipTap
-                                        content={data.ru || ''}
-                                        onChange={(content) => handleEditorChange('ru', content)}
-                                    />
-                                </div>
-
-                                <div className="mb-4">
-                                    <label className="block font-semibold mb-2">Text:</label>
-                                    <TipTap
-                                        content={data.text_ru || ''}
-                                        onChange={(content) => handleEditorChange('text_ru', content)}
-                                    />
-                                </div>
+                            <div className="mb-4">
+                                <label className="block font-semibold mb-2">Text:</label>
+                                <TipTap
+                                    content={data.text_en || ''}
+                                    onChange={(content) => handleEditorChange('text_en', content)}
+                                />
                             </div>
                         </div>
 
@@ -484,26 +492,12 @@ const EditProject = () => {
                             {organizers.map((org, index) => (
                                 !org._deleted && (
                                     <div key={index} className="border rounded-lg p-4 mb-3 bg-gray-50">
-                                        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                             <input
                                                 type="text"
-                                                placeholder="Organizer (TM)"
-                                                value={org.organizer_tk}
-                                                onChange={(e) => updateOrganizer(index, 'organizer_tk', e.target.value)}
-                                                className="border border-gray-300 rounded p-2 w-full"
-                                            />
-                                            <input
-                                                type="text"
-                                                placeholder="Organizer (EN)"
+                                                placeholder="Organizer"
                                                 value={org.organizer_en}
                                                 onChange={(e) => updateOrganizer(index, 'organizer_en', e.target.value)}
-                                                className="border border-gray-300 rounded p-2 w-full"
-                                            />
-                                            <input
-                                                type="text"
-                                                placeholder="Organizer (RU)"
-                                                value={org.organizer_ru}
-                                                onChange={(e) => updateOrganizer(index, 'organizer_ru', e.target.value)}
                                                 className="border border-gray-300 rounded p-2 w-full"
                                             />
                                             <input
@@ -546,6 +540,96 @@ const EditProject = () => {
                             >
                                 + Add organizer
                             </button>
+                        </div>
+
+                        <div className="mb-6">
+                            <h3 className="text-xl font-semibold mb-3">Participant companies</h3>
+
+                            {participants.map((prt, index) => (
+                                !prt._deleted && (
+                                    <div key={index} className="border rounded-lg p-4 mb-3 bg-gray-50">
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <input
+                                                type="text"
+                                                placeholder="Company name (optional)"
+                                                value={prt.participant_en}
+                                                onChange={(e) => updateParticipant(index, 'participant_en', e.target.value)}
+                                                className="border border-gray-300 rounded p-2 w-full"
+                                            />
+                                            <input
+                                                type="file"
+                                                accept="image/*"
+                                                onChange={(e) =>
+                                                    updateParticipant(index, 'participant_logo', e.target.files?.[0] || null)
+                                                }
+                                                className="border border-gray-300 rounded p-2 w-full"
+                                            />
+                                        </div>
+
+                                        {typeof prt.participant_logo === 'string' && prt.participant_logo && (
+                                            <div className="mt-2">
+                                                <Image
+                                                    src={`${process.env.NEXT_PUBLIC_API_URL}/${prt.participant_logo.replace(/\\/g, '/')}`}
+                                                    alt="company logo"
+                                                    width={100}
+                                                    height={100}
+                                                    className="rounded"
+                                                />
+                                            </div>
+                                        )}
+
+                                        <button
+                                            type="button"
+                                            onClick={() => removeParticipant(index)}
+                                            className="text-red-600 text-sm mt-2"
+                                        >
+                                            Remove
+                                        </button>
+                                    </div>
+                                )
+                            ))}
+
+                            <button
+                                type="button"
+                                onClick={addParticipant}
+                                className="bg-blue-600 text-white px-3 py-1 rounded"
+                            >
+                                + Add company
+                            </button>
+                        </div>
+
+                        <div className="space-y-3">
+                            <label className="block font-semibold">Gallery:</label>
+                            {galleryImages.length > 0 ? (
+                                <div className="flex flex-wrap gap-3">
+                                    {galleryImages.map((img) => (
+                                        <div key={img.id} className="relative">
+                                            <Image
+                                                src={`${process.env.NEXT_PUBLIC_API_URL}/${img.image.replace(/\\/g, '/')}`}
+                                                alt="Gallery"
+                                                width={128}
+                                                height={96}
+                                                className="h-24 w-32 object-cover rounded border"
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={() => deleteGalleryImage(img.id)}
+                                                className="absolute -top-2 -right-2 flex h-6 w-6 items-center justify-center rounded-full bg-red-600 text-sm text-white hover:bg-red-700"
+                                                aria-label="Delete image"
+                                            >
+                                                ×
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : (
+                                <p className="text-sm text-gray-500">No gallery images yet.</p>
+                            )}
+                            <GalleryPicker
+                                files={newGallery}
+                                onChange={setNewGallery}
+                                label="Add gallery images"
+                            />
                         </div>
 
                         <button

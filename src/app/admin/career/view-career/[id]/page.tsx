@@ -13,9 +13,11 @@ import {
 } from '@heroicons/react/16/solid';
 
 interface CareerData {
-    tk: string;
     en: string;
-    ru: string;
+    description: string;
+    requirements: string;
+    job_type: string;
+    location: string;
     date: string;
 }
 
@@ -131,21 +133,43 @@ const ViewCareer = () => {
 
                     <div className="bg-white p-6 rounded-lg shadow space-y-6 mt-6">
                         <div>
-                            <h3 className="text-lg font-semibold mb-2">Turkmen</h3>
-                            <div dangerouslySetInnerHTML={{ __html: data.tk }} />
-                        </div>
-                        <div>
-                            <h3 className="text-lg font-semibold mb-2">English</h3>
+                            <h3 className="text-lg font-semibold mb-2">Title</h3>
                             <div dangerouslySetInnerHTML={{ __html: data.en }} />
                         </div>
                         <div>
-                            <h3 className="text-lg font-semibold mb-2">Russian</h3>
-                            <div dangerouslySetInnerHTML={{ __html: data.ru }} />
-                        </div>
-                        <div>
                             <h3 className="text-lg font-semibold mb-2">Date</h3>
-                            {new Date(data.date).toLocaleDateString("tm-TM")}
+                            {new Date(data.date).toLocaleDateString("en-US")}
                         </div>
+                        {data.job_type && (
+                            <div>
+                                <h3 className="text-lg font-semibold mb-2">Type</h3>
+                                {data.job_type}
+                            </div>
+                        )}
+                        {data.location && (
+                            <div>
+                                <h3 className="text-lg font-semibold mb-2">Location</h3>
+                                {data.location}
+                            </div>
+                        )}
+                        {data.description && (
+                            <div>
+                                <h3 className="text-lg font-semibold mb-2">Description</h3>
+                                <div
+                                    className="prose max-w-none"
+                                    dangerouslySetInnerHTML={{ __html: data.description }}
+                                />
+                            </div>
+                        )}
+                        {data.requirements && (
+                            <div>
+                                <h3 className="text-lg font-semibold mb-2">Requirements</h3>
+                                <div
+                                    className="prose max-w-none"
+                                    dangerouslySetInnerHTML={{ __html: data.requirements }}
+                                />
+                            </div>
+                        )}
                     </div>
                 </div>
 

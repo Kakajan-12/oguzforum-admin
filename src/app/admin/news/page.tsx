@@ -1,30 +1,26 @@
 'use client'
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useMemo, useState} from "react";
 import {useRouter} from "next/navigation";
 import axios, {AxiosError} from "axios";
 import Sidebar from "@/Components/Sidebar";
 import TokenTimer from "@/Components/TokenTimer";
 import Link from "next/link";
-import {EyeIcon, PlusCircleIcon} from "@heroicons/react/16/solid";
+import {EyeIcon, PencilSquareIcon, TrashIcon, PlusIcon, MagnifyingGlassIcon} from "@heroicons/react/16/solid";
 import Image from "next/image";
 
 interface NewsItem {
     id: number;
     image: string;
-    tk: string;
     en: string;
-    ru: string;
-    text_tk: string;
     text_en: string;
-    text_ru: string;
-    cat_tk: string;
     cat_en: string;
-    cat_ru: string;
 }
+
+const stripHtml = (s?: string) => (s ?? "").replace(/<[^>]*>?/gm, "").trim();
 
 const News = () => {
     const [news, setNews] = useState<NewsItem[]>([]);
-
+    const [search, setSearch] = useState("");
     const [error, setError] = useState<string | null>(null);
     const router = useRouter();
 
@@ -36,88 +32,110 @@ const News = () => {
                     router.push('/');
                     return;
                 }
-
                 const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/news`, {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
+                    headers: { Authorization: `Bearer ${token}` },
                 });
-
                 setNews(response.data);
             } catch (err) {
                 const axiosError = err as AxiosError;
                 console.error(axiosError);
                 setError("Ошибка при получении данных");
-
                 if (axios.isAxiosError(axiosError) && axiosError.response?.status === 401) {
                     router.push("/");
                 }
             }
         };
-
         fetchNews();
     }, [router]);
 
-    if (error) {
-        return <div>{error}</div>;
-    }
+    const deleteItem = async (id: number) => {
+        if (!window.confirm("Delete this news item? This cannot be undone.")) return;
+        try {
+            const token = localStorage.getItem('auth_token');
+            await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/api/news/${id}`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            setNews((prev) => prev.filter((n) => n.id !== id));
+        } catch (err) {
+            console.error(err);
+            alert("Failed to delete.");
+        }
+    };
+
+    const filtered = useMemo(() => {
+        if (!search.trim()) return news;
+        const q = search.toLowerCase();
+        return news.filter((n) => stripHtml(n.en).toLowerCase().includes(q));
+    }, [news, search]);
+
+    if (error) return <div className="admin-page flex"><Sidebar/><div className="ml-64 flex-1 p-10 text-red-600">{error}</div></div>;
 
     return (
-        <div className="flex bg-gray-200">
+        <div className="admin-page flex">
             <Sidebar/>
-            <div className="flex-1 p-10 ml-62">
+            <div className="ml-64 flex-1 p-8 lg:p-10">
                 <TokenTimer/>
-                <div className="mt-8">
-                    <div className="w-full flex justify-between">
-                        <h2 className="text-2xl font-bold mb-4">News</h2>
-                        <Link href="/admin/news/add-news"
-                              className="bg text-white h-fit py-2 px-8 rounded-md cursor-pointer flex items-center"><PlusCircleIcon
-                            className="size-6" color="#ffffff"/>
-                            <div className="ml-2">Add</div>
+
+                <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                        <h1 className="text-2xl font-bold text-gray-900">News</h1>
+                        <p className="mt-1 text-sm text-gray-500">{filtered.length} item{filtered.length === 1 ? "" : "s"}</p>
+                    </div>
+                    <div className="flex items-center gap-3">
+                        <div className="relative">
+                            <MagnifyingGlassIcon className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-gray-400"/>
+                            <input
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
+                                placeholder="Search news"
+                                className="admin-input !w-64 !pl-9"
+                            />
+                        </div>
+                        <Link href="/admin/news/add-news" className="admin-btn whitespace-nowrap">
+                            <PlusIcon className="size-5"/> Add
                         </Link>
                     </div>
-                    <table className="min-w-full bg-white border border-gray-200 rounded-lg">
+                </div>
+
+                <div className="admin-card overflow-hidden">
+                    <table className="min-w-full text-sm">
                         <thead>
-                        <tr>
-                            <th className="py-2 px-4 border-b-2 border-gray-200 text-left text-gray-600">Image</th>
-                            <th className="py-2 px-4 border-b-2 border-gray-200 text-left text-gray-600">Turkmen</th>
-                            <th className="py-2 px-4 border-b-2 border-gray-200 text-left text-gray-600">English</th>
-                            <th className="py-2 px-4 border-b-2 border-gray-200 text-left text-gray-600">Russian</th>
-                            <th className="py-2 px-4 border-b-2 border-gray-200 text-left text-gray-600">View</th>
+                        <tr className="border-b border-gray-200 bg-gray-50 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">
+                            <th className="px-5 py-3">Image</th>
+                            <th className="px-5 py-3">Title</th>
+                            <th className="px-5 py-3 text-right">Actions</th>
                         </tr>
                         </thead>
-                        <tbody>
-                        {news.length === 0 ? (
-                            <tr>
-                                <td colSpan={5} className="text-center py-4">No sliders available</td>
-                            </tr>
+                        <tbody className="divide-y divide-gray-100">
+                        {filtered.length === 0 ? (
+                            <tr><td colSpan={3} className="px-5 py-10 text-center text-gray-400">No news found</td></tr>
                         ) : (
-                            news.map(news => (
-                                <tr key={news.id}>
-                                    <td className="py-4 px-4 border-b border-gray-200">
+                            filtered.map((n) => (
+                                <tr key={n.id} className="transition-colors hover:bg-gray-50">
+                                    <td className="px-5 py-3">
                                         <Image
-                                            src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/${news.image.replace(/^.*[\\/]/, '')}`}
-                                            alt={`News ${news.id}`}
-                                            width={100}
-                                            height={100}
+                                            src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/${n.image.replace(/^.*[\\/]/, '')}`}
+                                            alt={`News ${n.id}`}
+                                            width={72}
+                                            height={48}
+                                            className="h-12 w-[72px] rounded-md object-cover"
                                         />
-
                                     </td>
-                                    <td className="py-4 px-4 border-b border-gray-200">
-                                        <div dangerouslySetInnerHTML={{__html: news.tk}}/>
+                                    <td className="px-5 py-3">
+                                        <p className="font-medium text-gray-800 line-clamp-2 max-w-xl">{stripHtml(n.en)}</p>
                                     </td>
-                                    <td className="py-4 px-4 border-b border-gray-200">
-                                        <div dangerouslySetInnerHTML={{__html: news.en}}/>
-                                    </td>
-                                    <td className="py-4 px-4 border-b border-gray-200">
-                                        <div dangerouslySetInnerHTML={{__html: news.ru}}/>
-                                    </td>
-                                    <td className="py-4 px-4 border-b border-gray-200">
-                                        <Link href={`/admin/news/view-news/${news.id}`}
-                                              className="bg text-white py-2 px-8 rounded-md cursor-pointer flex w-32"><EyeIcon
-                                            color="#ffffff"/>
-                                            <div className="ml-2">View</div>
-                                        </Link>
+                                    <td className="px-5 py-3">
+                                        <div className="flex items-center justify-end gap-2">
+                                            <Link href={`/admin/news/view-news/${n.id}`} className="admin-btn-ghost" title="View">
+                                                <EyeIcon className="size-4"/>
+                                            </Link>
+                                            <Link href={`/admin/news/edit-news/${n.id}`} className="admin-btn-ghost" title="Edit">
+                                                <PencilSquareIcon className="size-4"/>
+                                            </Link>
+                                            <button onClick={() => deleteItem(n.id)} className="admin-btn-danger" title="Delete">
+                                                <TrashIcon className="size-4"/>
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>
                             ))

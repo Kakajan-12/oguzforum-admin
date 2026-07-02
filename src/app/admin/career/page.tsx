@@ -9,9 +9,7 @@ import { EyeIcon, PlusCircleIcon } from "@heroicons/react/16/solid";
 
 interface CareerItem {
     id: number;
-    tk: string;
     en: string;
-    ru: string;
 }
 
 const Career = () => {
@@ -72,28 +70,20 @@ const Career = () => {
                     <table className="min-w-full bg-white border border-gray-200 rounded-lg">
                         <thead>
                         <tr>
-                            <th className="py-2 px-4 border-b-2 border-gray-200 text-left text-gray-600">Turkmen</th>
-                            <th className="py-2 px-4 border-b-2 border-gray-200 text-left text-gray-600">English</th>
-                            <th className="py-2 px-4 border-b-2 border-gray-200 text-left text-gray-600">Russian</th>
+                            <th className="py-2 px-4 border-b-2 border-gray-200 text-left text-gray-600">Title</th>
                             <th className="py-2 px-4 border-b-2 border-gray-200 text-left text-gray-600">View</th>
                         </tr>
                         </thead>
                         <tbody>
                         {career.length === 0 ? (
                             <tr>
-                                <td colSpan={4} className="text-center py-4">No career available</td>
+                                <td colSpan={2} className="text-center py-4">No career available</td>
                             </tr>
                         ) : (
                             career.map((item) => (
                                 <tr key={item.id}>
                                     <td className="py-4 px-4 border-b border-gray-200">
-                                        <div dangerouslySetInnerHTML={{ __html: item.tk }} />
-                                    </td>
-                                    <td className="py-4 px-4 border-b border-gray-200">
                                         <div dangerouslySetInnerHTML={{ __html: item.en }} />
-                                    </td>
-                                    <td className="py-4 px-4 border-b border-gray-200">
-                                        <div dangerouslySetInnerHTML={{ __html: item.ru }} />
                                     </td>
                                     <td className="py-4 px-4 border-b border-gray-200">
                                         <Link

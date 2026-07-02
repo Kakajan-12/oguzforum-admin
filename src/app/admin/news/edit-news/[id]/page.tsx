@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import axios from 'axios';
 import TipTap from '@/Components/TipTapEditor';
+import GalleryPicker from '@/Components/GalleryPicker';
 import Sidebar from "@/Components/Sidebar";
 import TokenTimer from "@/Components/TokenTimer";
 import { DocumentIcon } from "@heroicons/react/16/solid";
@@ -12,11 +13,13 @@ const EditNews = () => {
     const { id } = useParams();
     const router = useRouter();
 
-    const [data, setData] = useState({ tk: '', text_tk: '', en: '', text_en: '', ru: '', text_ru: '', image: '', date: '', news_cat_id: '' });
+    const [data, setData] = useState({ en: '', text_en: '', image: '', date: '', news_cat_id: '' });
     const [imageFile, setImageFile] = useState<File | null>(null);
+    const [galleryImages, setGalleryImages] = useState<{ id: number; image: string }[]>([]);
+    const [newGallery, setNewGallery] = useState<File[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
-    const [categories, setCategories] = useState<{ id: number, cat_tk: string, cat_en: string, cat_ru: string }[]>([]);
+    const [categories, setCategories] = useState<{ id: number, cat_en: string }[]>([]);
 
     useEffect(() => {
         const fetchCategories = async () => {
@@ -54,6 +57,7 @@ const EditNews = () => {
                         ...rawData,
                         date: formattedDate,
                     });
+                    setGalleryImages(rawData.images || []);
 
                     setLoading(false);
                 } else {
@@ -79,12 +83,8 @@ const EditNews = () => {
             const token = localStorage.getItem('auth_token');
 
             const formData = new FormData();
-            formData.append("tk", data.tk);
             formData.append("en", data.en);
-            formData.append("ru", data.ru);
-            formData.append("text_tk", data.text_tk);
             formData.append("text_en", data.text_en);
-            formData.append("text_ru", data.text_ru);
             formData.append("news_cat_id", String(data.news_cat_id));
             formData.append("date", data.date);
 
@@ -92,6 +92,9 @@ const EditNews = () => {
             if (imageFile) {
                 formData.append("image", imageFile);
             }
+
+            // новые изображения галереи (дозаписываются к существующим)
+            newGallery.forEach((f) => formData.append("gallery", f));
 
             await axios.put(
                 `${process.env.NEXT_PUBLIC_API_URL}/api/news/${id}`,
@@ -108,6 +111,18 @@ const EditNews = () => {
         } catch (err) {
             console.error(err);
             setError("Ошибка при сохранении");
+        }
+    };
+
+    const deleteGalleryImage = async (imageId: number) => {
+        try {
+            const token = localStorage.getItem('auth_token');
+            await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/api/news/image/${imageId}`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            setGalleryImages((prev) => prev.filter((img) => img.id !== imageId));
+        } catch (err) {
+            console.error('Ошибка при удалении изображения:', err);
         }
     };
 
@@ -181,67 +196,62 @@ const EditNews = () => {
                                     <option value="">Select category</option>
                                     {categories.map((cat) => (
                                         <option key={cat.id} value={String(cat.id)}>
-                                            {cat.cat_en} / {cat.cat_tk} / {cat.cat_ru}
+                                            {cat.cat_en}
                                         </option>
                                     ))}
                                 </select>
                             </div>
                         </div>
 
-                        <div className="tabs tabs-lift">
-                            <input type="radio" name="my_tabs_3" className="tab" aria-label="Turkmen" defaultChecked/>
-                            <div className="tab-content bg-base-100 border-base-300 p-6">
-                                <div className="mb-4">
-                                    <label className="block font-semibold mb-2">Title</label>
-                                    <TipTap
-                                        content={data.tk}
-                                        onChange={(content) => handleEditorChange('tk', content)}
-                                    />
-                                </div>
-                                <div className="mb-4">
-                                    <label className="block font-semibold mb-2">Text:</label>
-                                    <TipTap
-                                        content={data.text_tk}
-                                        onChange={(content) => handleEditorChange('text_tk', content)}
-                                    />
-                                </div>
+                        <div className="space-y-4">
+                            <div className="mb-4">
+                                <label className="block font-semibold mb-2">Title:</label>
+                                <TipTap
+                                    content={data.en}
+                                    onChange={(content) => handleEditorChange('en', content)}
+                                />
                             </div>
+                            <div className="mb-4">
+                                <label className="block font-semibold mb-2">Text:</label>
+                                <TipTap
+                                    content={data.text_en}
+                                    onChange={(content) => handleEditorChange('text_en', content)}
+                                />
+                            </div>
+                        </div>
 
-                            <input type="radio" name="my_tabs_3" className="tab" aria-label="English"/>
-                            <div className="tab-content bg-base-100 border-base-300 p-6">
-                                <div className="mb-4">
-                                    <label className="block font-semibold mb-2">Title:</label>
-                                    <TipTap
-                                        content={data.en}
-                                        onChange={(content) => handleEditorChange('en', content)}
-                                    />
+                        <div className="space-y-3">
+                            <label className="block font-semibold">Gallery:</label>
+                            {galleryImages.length > 0 ? (
+                                <div className="flex flex-wrap gap-3">
+                                    {galleryImages.map((img) => (
+                                        <div key={img.id} className="relative">
+                                            <Image
+                                                src={`${process.env.NEXT_PUBLIC_API_URL}/${img.image.replace('\\', '/')}`}
+                                                alt="Gallery"
+                                                width={128}
+                                                height={96}
+                                                className="h-24 w-32 object-cover rounded border"
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={() => deleteGalleryImage(img.id)}
+                                                className="absolute -top-2 -right-2 flex h-6 w-6 items-center justify-center rounded-full bg-red-600 text-sm text-white hover:bg-red-700"
+                                                aria-label="Delete image"
+                                            >
+                                                ×
+                                            </button>
+                                        </div>
+                                    ))}
                                 </div>
-                                <div className="mb-4">
-                                    <label className="block font-semibold mb-2">Text:</label>
-                                    <TipTap
-                                        content={data.text_en}
-                                        onChange={(content) => handleEditorChange('text_en', content)}
-                                    />
-                                </div>
-                            </div>
-
-                            <input type="radio" name="my_tabs_3" className="tab" aria-label="Russian"/>
-                            <div className="tab-content bg-base-100 border-base-300 p-6">
-                                <div className="mb-4">
-                                    <label className="block font-semibold mb-2">Title:</label>
-                                    <TipTap
-                                        content={data.ru}
-                                        onChange={(content) => handleEditorChange('ru', content)}
-                                    />
-                                </div>
-                                <div className="mb-4">
-                                    <label className="block font-semibold mb-2">Text:</label>
-                                    <TipTap
-                                        content={data.text_ru}
-                                        onChange={(content) => handleEditorChange('text_ru', content)}
-                                    />
-                                </div>
-                            </div>
+                            ) : (
+                                <p className="text-sm text-gray-500">No gallery images yet.</p>
+                            )}
+                            <GalleryPicker
+                                files={newGallery}
+                                onChange={setNewGallery}
+                                label="Add gallery images"
+                            />
                         </div>
 
                         <button

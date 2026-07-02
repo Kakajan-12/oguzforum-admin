@@ -12,12 +12,8 @@ interface Project {
     id: number;
     image: string;
     logo: string;
-    tk: string;
     en: string;
-    ru: string;
-    text_tk: string;
     text_en: string;
-    text_ru: string;
 }
 
 const Projects = () => {

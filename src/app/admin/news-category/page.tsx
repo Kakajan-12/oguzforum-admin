@@ -9,9 +9,7 @@ import { EyeIcon, PlusCircleIcon } from "@heroicons/react/16/solid";
 
 type NewsItem = {
     id: string;
-    cat_tk: string;
     cat_en: string;
-    cat_ru: string;
 };
 
 const NewsCategory = () => {
@@ -70,28 +68,20 @@ const NewsCategory = () => {
                     <table className="min-w-full bg-white border border-gray-200 rounded-lg">
                         <thead>
                         <tr>
-                            <th className="py-2 px-4 border-b-2 border-gray-200 text-left text-gray-600">Turkmen</th>
                             <th className="py-2 px-4 border-b-2 border-gray-200 text-left text-gray-600">English</th>
-                            <th className="py-2 px-4 border-b-2 border-gray-200 text-left text-gray-600">Russian</th>
                             <th className="py-2 px-4 border-b-2 border-gray-200 text-left text-gray-600">View</th>
                         </tr>
                         </thead>
                         <tbody>
                         {news.length === 0 ? (
                             <tr>
-                                <td colSpan={5} className="text-center py-4">No sliders available</td>
+                                <td colSpan={2} className="text-center py-4">No categories available</td>
                             </tr>
                         ) : (
                             news.map((newsItem) => (
                                 <tr key={newsItem.id}>
                                     <td className="py-4 px-4 border-b border-gray-200">
-                                        <div dangerouslySetInnerHTML={{ __html: newsItem.cat_tk }} />
-                                    </td>
-                                    <td className="py-4 px-4 border-b border-gray-200">
                                         <div dangerouslySetInnerHTML={{ __html: newsItem.cat_en }} />
-                                    </td>
-                                    <td className="py-4 px-4 border-b border-gray-200">
-                                        <div dangerouslySetInnerHTML={{ __html: newsItem.cat_ru }} />
                                     </td>
                                     <td className="py-4 px-4 border-b border-gray-200">
                                         <Link href={`/admin/news-category/view-news-category/${newsItem.id}`}

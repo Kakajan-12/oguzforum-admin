@@ -152,26 +152,6 @@ const ViewNews = () => {
 
                         <div className="flex-1 space-y-10 divide-y-1">
                             <div>
-                                <div className="font-bold text-lg mb-2">Turkmen</div>
-                                {data.tk && (
-                                    <div><strong>Title:</strong>
-                                        <div dangerouslySetInnerHTML={{__html: data.tk}}/>
-                                    </div>
-                                )}
-                                {data.text_tk && (
-                                    <div><strong>Text:</strong>
-                                        <div dangerouslySetInnerHTML={{__html: data.text_tk}}/>
-                                    </div>
-                                )}
-                                {data.cat_tk && (
-                                    <div><strong>Category:</strong>
-                                        <div dangerouslySetInnerHTML={{__html: data.cat_tk}}/>
-                                    </div>
-                                )}
-
-                            </div>
-                            <div>
-                                <div className="font-bold text-lg mb-2">English</div>
                                 {data.en && (
                                     <div><strong>Title:</strong>
                                         <div dangerouslySetInnerHTML={{__html: data.en}}/>
@@ -185,25 +165,6 @@ const ViewNews = () => {
                                 {data.cat_en && (
                                     <div><strong>Category:</strong>
                                         <div dangerouslySetInnerHTML={{__html: data.cat_en}}/>
-                                    </div>
-                                )}
-
-                            </div>
-                            <div>
-                                <div className="font-bold text-lg mb-2">Russian</div>
-                                {data.ru && (
-                                    <div><strong>Title:</strong>
-                                        <div dangerouslySetInnerHTML={{__html: data.ru}}/>
-                                    </div>
-                                )}
-                                {data.text_ru && (
-                                    <div><strong>Text:</strong>
-                                        <div dangerouslySetInnerHTML={{__html: data.text_ru}}/>
-                                    </div>
-                                )}
-                                {data.cat_ru && (
-                                    <div><strong>Category:</strong>
-                                        <div dangerouslySetInnerHTML={{__html: data.cat_ru}}/>
                                     </div>
                                 )}
                             </div>

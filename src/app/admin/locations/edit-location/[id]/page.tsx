@@ -7,9 +7,7 @@ import TokenTimer from "@/Components/TokenTimer";
 import { DocumentIcon } from "@heroicons/react/16/solid";
 
 type LocationData = {
-    location_tk: string;
     location_en: string;
-    location_ru: string;
 };
 
 const EditLocation = () => {
@@ -17,9 +15,7 @@ const EditLocation = () => {
     const router = useRouter();
 
     const [data, setData] = useState<LocationData>({
-        location_tk: '',
         location_en: '',
-        location_ru: '',
     });
 
     const [loading, setLoading] = useState<boolean>(true);
@@ -37,9 +33,7 @@ const EditLocation = () => {
 
                 const location = response.data[0]; // If API returns array
                 setData({
-                    location_tk: location.location_tk || '',
                     location_en: location.location_en || '',
-                    location_ru: location.location_ru || '',
                 });
             } catch (err) {
                 const axiosError = err as AxiosError;
@@ -87,34 +81,10 @@ const EditLocation = () => {
                     <h1 className="text-2xl font-bold mb-6">Edit Location</h1>
                     <form onSubmit={handleSubmit} className="space-y-6 bg-white p-6 rounded shadow">
                         <div>
-                            <label className="block text-gray-700 font-semibold mb-2">Turkmen:</label>
-                            <input
-                                name="location_tk"
-                                value={data.location_tk}
-                                onChange={handleChange}
-                                type="text"
-                                required
-                                className="border border-gray-300 rounded p-2 w-full"
-                            />
-                        </div>
-
-                        <div>
                             <label className="block text-gray-700 font-semibold mb-2">English:</label>
                             <input
                                 name="location_en"
                                 value={data.location_en}
-                                onChange={handleChange}
-                                type="text"
-                                required
-                                className="border border-gray-300 rounded p-2 w-full"
-                            />
-                        </div>
-
-                        <div>
-                            <label className="block text-gray-700 font-semibold mb-2">Russian:</label>
-                            <input
-                                name="location_ru"
-                                value={data.location_ru}
                                 onChange={handleChange}
                                 type="text"
                                 required

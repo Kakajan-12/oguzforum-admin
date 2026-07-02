@@ -5,27 +5,23 @@ import axios from "axios";
 import Sidebar from "@/Components/Sidebar";
 import TokenTimer from "@/Components/TokenTimer";
 import { DocumentIcon } from "@heroicons/react/16/solid";
-import Image from "next/image";
-import TipTap from "@/Components/TipTapEditor";
 
 interface SliderData {
-  tk: string;
   en: string;
-  ru: string;
   image: string;
 }
+
+const isVideo = (path?: string) => !!path && /\.(mp4|webm)$/i.test(path);
 
 const EditSlider = () => {
   const { id } = useParams();
   const router = useRouter();
 
   const [slider, setSlider] = useState<SliderData>({
-    tk: "",
     en: "",
-    ru: "",
     image: "",
   });
-  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [videoFile, setVideoFile] = useState<File | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>("");
 
@@ -51,10 +47,6 @@ const EditSlider = () => {
     if (id) fetchSlider();
   }, [id]);
 
-  const handleEditorChange = (name: keyof SliderData, content: string) => {
-    setSlider((prev) => ({ ...prev, [name]: content }));
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
@@ -67,13 +59,11 @@ const EditSlider = () => {
       }
 
       const formData = new FormData();
-      formData.append("tk", slider.tk);
       formData.append("en", slider.en);
-      formData.append("ru", slider.ru);
 
-      // если новое изображение выбрано
-      if (imageFile) {
-        formData.append("image", imageFile);
+      // если новое видео выбрано
+      if (videoFile) {
+        formData.append("video", videoFile);
       }
 
       await axios.put(
@@ -87,7 +77,7 @@ const EditSlider = () => {
         },
       );
 
-      router.push(`/admin/sliders/view-slider/${id}`);
+      router.push(`/admin/hero-video/view/${id}`);
     } catch (err) {
       console.error(err);
       setError("Error saving slider");
@@ -103,7 +93,7 @@ const EditSlider = () => {
       <div className="flex-1 p-10 ml-62">
         <TokenTimer />
         <div className="mt-8">
-          <h1 className="text-2xl font-bold mb-4">Edit Slider</h1>
+          <h1 className="text-2xl font-bold mb-4">Edit Hero Video</h1>
           <form
             onSubmit={handleSubmit}
             className="space-y-6 bg-white p-6 rounded shadow"
@@ -111,57 +101,40 @@ const EditSlider = () => {
             {slider.image && (
               <div className="mb-4">
                 <label className="block font-semibold mb-2">
-                  Current Image:
+                  Current Video:
                 </label>
-                <Image
-                  src={`${process.env.NEXT_PUBLIC_API_URL}/${slider.image.replace(/\\/g, "/")}`}
-                  alt="Slider"
-                  width={200}
-                  height={200}
-                  className="w-64 rounded"
-                />
+                {isVideo(slider.image) ? (
+                  <video
+                    src={`${process.env.NEXT_PUBLIC_API_URL}/${slider.image.replace(/\\/g, "/")}`}
+                    controls
+                    muted
+                    className="w-64 rounded"
+                  />
+                ) : (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={`${process.env.NEXT_PUBLIC_API_URL}/${slider.image.replace(/\\/g, "/")}`}
+                    alt="Slider"
+                    className="w-64 rounded"
+                  />
+                )}
               </div>
             )}
 
             <div className="mb-4">
-              <label htmlFor="image" className="block font-semibold mb-2">
-                New Image:
+              <label htmlFor="video" className="block font-semibold mb-2">
+                New Video (mp4 / webm):
               </label>
               <input
                 type="file"
-                id="image"
-                accept="image/*"
+                id="video"
+                accept="video/mp4,video/webm"
                 onChange={(e) => {
                   if (e.target.files && e.target.files[0]) {
-                    setImageFile(e.target.files[0]);
+                    setVideoFile(e.target.files[0]);
                   }
                 }}
                 className="border border-gray-300 rounded p-2 w-full"
-              />
-            </div>
-
-            <div>
-              <label className="block font-semibold mb-2">Turkmen</label>
-              <TipTap
-                content={slider.tk}
-                onChange={(content) => handleEditorChange("tk", content)}
-              />
-            </div>
-
-            <div>
-              <label className="block font-semibold mb-2">English</label>
-
-              <TipTap
-                content={slider.en}
-                onChange={(content) => handleEditorChange("en", content)}
-              />
-            </div>
-
-            <div>
-              <label className="block font-semibold mb-2">Russian</label>
-              <TipTap
-                content={slider.ru}
-                onChange={(content) => handleEditorChange("ru", content)}
               />
             </div>
 

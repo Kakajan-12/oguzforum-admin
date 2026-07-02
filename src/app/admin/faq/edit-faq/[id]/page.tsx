@@ -12,9 +12,7 @@ const EditFaq = () => {
     const router = useRouter();
 
     const [data, setData] = useState({
-        tk: '', text_tk: '',
-        en: '', text_en: '',
-        ru: '', text_ru: ''
+        en: '', text_en: ''
     });
 
     const [loading, setLoading] = useState(true);
@@ -31,12 +29,8 @@ const EditFaq = () => {
                 const raw = response.data[0];
                 if (raw) {
                     setData({
-                        tk: raw.tk || '',
-                        text_tk: raw.text_tk || '',
                         en: raw.en || '',
                         text_en: raw.text_en || '',
-                        ru: raw.ru || '',
-                        text_ru: raw.text_ru || '',
                     });
                 } else {
                     setError('Данные не найдены');
@@ -74,10 +68,10 @@ const EditFaq = () => {
     if (loading) return <p>Загрузка...</p>;
     if (error) return <p className="text-red-600">{error}</p>;
 
-    const renderEditorBlock = (lang: string, questionField: keyof typeof data, answerField: keyof typeof data) => (
-        <div className="tab-content bg-base-100 border-base-300 p-6">
+    const renderEditorBlock = (questionField: keyof typeof data, answerField: keyof typeof data) => (
+        <div className="bg-base-100 border border-gray-200 rounded-md p-6">
             <div className="mb-4">
-                <label className="block font-semibold mb-2">Question ({lang}):</label>
+                <label className="block font-semibold mb-2">Question:</label>
                 <input
                     value={data[questionField]}
                     onChange={(e) => handleChange(questionField, e.target.value)}
@@ -87,7 +81,7 @@ const EditFaq = () => {
                 />
             </div>
             <div className="mb-4">
-                <label className="block font-semibold mb-2">Answer ({lang}):</label>
+                <label className="block font-semibold mb-2">Answer:</label>
                 <TipTap
                     key={`${answerField}-editor`}
                     content={data[answerField]}
@@ -105,16 +99,7 @@ const EditFaq = () => {
                 <div className="mt-8">
                     <h1 className="text-2xl font-bold mb-4">Edit FAQ</h1>
                     <form onSubmit={handleSubmit} className="space-y-6 bg-white p-6 rounded shadow">
-                        <div className="tabs tabs-lift">
-                            <input type="radio" name="faq_tabs" className="tab" aria-label="Turkmen" defaultChecked />
-                            {renderEditorBlock('Turkmen', 'tk', 'text_tk')}
-
-                            <input type="radio" name="faq_tabs" className="tab" aria-label="English" />
-                            {renderEditorBlock('English', 'en', 'text_en')}
-
-                            <input type="radio" name="faq_tabs" className="tab" aria-label="Russian" />
-                            {renderEditorBlock('Russian', 'ru', 'text_ru')}
-                        </div>
+                        {renderEditorBlock('en', 'text_en')}
 
                         <button
                             type="submit"

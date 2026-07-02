@@ -7,7 +7,7 @@ import Sidebar from "@/Components/Sidebar";
 import TokenTimer from "@/Components/TokenTimer";
 import { DocumentIcon } from "@heroicons/react/16/solid";
 
-const EditCookie = () => {
+const EditTerms = () => {
     const { id } = useParams();
     const router = useRouter();
 
@@ -19,7 +19,7 @@ const EditCookie = () => {
         const fetchData = async () => {
             try {
                 const token = localStorage.getItem('auth_token');
-                const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/privacy/${id}`, {
+                const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/terms/${id}`, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
@@ -56,7 +56,7 @@ const EditCookie = () => {
         try {
             const token = localStorage.getItem('auth_token');
 
-            await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/api/privacy/${id}`,
+            await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/api/terms/${id}`,
                 { ...data },
                 {
                     headers: {
@@ -65,7 +65,7 @@ const EditCookie = () => {
                 }
             );
 
-            router.push("/admin/privacy");
+            router.push("/admin/terms");
         } catch (err) {
             console.error(err);
             setError('Ошибка при сохранении');
@@ -81,10 +81,10 @@ const EditCookie = () => {
             <div className="flex-1 p-10 ml-62">
                 <TokenTimer />
                 <div className="mt-8">
-                    <h1 className="text-2xl font-bold mb-4">Edit Privacy Policy</h1>
+                    <h1 className="text-2xl font-bold mb-4">Edit Terms of Use</h1>
                     <form onSubmit={handleSubmit} className="space-y-6 bg-white p-6 rounded shadow">
                         <div className="mb-4">
-                            <label className="block font-semibold mb-2">Title:</label>
+                            <label className="block font-semibold mb-2">Content:</label>
                             <TipTap
                                 content={data.en}
                                 onChange={(content) => handleEditorChange('en', content)}
@@ -105,4 +105,4 @@ const EditCookie = () => {
     );
 };
 
-export default EditCookie;
+export default EditTerms;

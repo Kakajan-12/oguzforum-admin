@@ -6,9 +6,7 @@ import Sidebar from '@/Components/Sidebar';
 import TokenTimer from '@/Components/TokenTimer';
 
 const AddPressCategory = () => {
-    const [cat_tk, setCatTk] = useState('');
     const [cat_en, setCatEn] = useState('');
-    const [cat_ru, setCatRu] = useState('');
     const router = useRouter();
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -21,9 +19,7 @@ const AddPressCategory = () => {
         }
 
         const payload = {
-            cat_tk,
             cat_en,
-            cat_ru,
         };
 
         try {
@@ -39,9 +35,7 @@ const AddPressCategory = () => {
             if (response.ok) {
                 const data = await response.json();
                 console.log('Категория добавлена!', data);
-                setCatTk('');
                 setCatEn('');
-                setCatRu('');
                 router.push('/admin/press-category');
             } else {
                 const errorText = await response.text();
@@ -65,32 +59,10 @@ const AddPressCategory = () => {
                         <h2 className="text-2xl font-bold mb-4">Add press category</h2>
 
                         <div className="mb-4">
-                            <label className="block text-gray-700 font-semibold mb-2">Turkmen:</label>
-                            <input
-                                value={cat_tk}
-                                onChange={(e) => setCatTk(e.target.value)}
-                                type="text"
-                                required
-                                className="border border-gray-300 rounded p-2 w-full"
-                            />
-                        </div>
-
-                        <div className="mb-4">
                             <label className="block text-gray-700 font-semibold mb-2">English:</label>
                             <input
                                 value={cat_en}
                                 onChange={(e) => setCatEn(e.target.value)}
-                                type="text"
-                                required
-                                className="border border-gray-300 rounded p-2 w-full"
-                            />
-                        </div>
-
-                        <div className="mb-4">
-                            <label className="block text-gray-700 font-semibold mb-2">Russian:</label>
-                            <input
-                                value={cat_ru}
-                                onChange={(e) => setCatRu(e.target.value)}
                                 type="text"
                                 required
                                 className="border border-gray-300 rounded p-2 w-full"

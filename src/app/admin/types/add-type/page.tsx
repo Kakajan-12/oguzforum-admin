@@ -6,9 +6,7 @@ import Sidebar from '@/Components/Sidebar';
 import TokenTimer from '@/Components/TokenTimer';
 
 const AddType = () => {
-    const [type_tk, setTypeTk] = useState('');
     const [type_en, setTypeEn] = useState('');
-    const [type_ru, setTypeRu] = useState('');
     const router = useRouter();
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -21,9 +19,7 @@ const AddType = () => {
         }
 
         const payload = {
-            type_tk,
             type_en,
-            type_ru,
         };
 
         try {
@@ -39,9 +35,7 @@ const AddType = () => {
             if (response.ok) {
                 const data = await response.json();
                 console.log('Проекты добавлены!', data);
-                setTypeTk('');
                 setTypeEn('');
-                setTypeRu('');
                 router.push('/admin/types');
             } else {
                 const errorText = await response.text();
@@ -65,32 +59,10 @@ const AddType = () => {
                         <h2 className="text-2xl font-bold mb-4">Add project types</h2>
 
                         <div className="mb-4">
-                            <label className="block text-gray-700 font-semibold mb-2">Turkmen:</label>
-                            <input
-                                value={type_tk}
-                                onChange={(e) => setTypeTk(e.target.value)}
-                                type="text"
-                                required
-                                className="border border-gray-300 rounded p-2 w-full"
-                            />
-                        </div>
-
-                        <div className="mb-4">
                             <label className="block text-gray-700 font-semibold mb-2">English:</label>
                             <input
                                 value={type_en}
                                 onChange={(e) => setTypeEn(e.target.value)}
-                                type="text"
-                                required
-                                className="border border-gray-300 rounded p-2 w-full"
-                            />
-                        </div>
-
-                        <div className="mb-4">
-                            <label className="block text-gray-700 font-semibold mb-2">Russian:</label>
-                            <input
-                                value={type_ru}
-                                onChange={(e) => setTypeRu(e.target.value)}
                                 type="text"
                                 required
                                 className="border border-gray-300 rounded p-2 w-full"

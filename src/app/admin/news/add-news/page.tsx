@@ -5,25 +5,23 @@ import { useRouter } from "next/navigation";
 import Sidebar from "@/Components/Sidebar";
 import TokenTimer from "@/Components/TokenTimer";
 import TipTap from "@/Components/TipTapEditor";
+import GalleryPicker from "@/Components/GalleryPicker";
 
 const AddNews = () => {
   const [isClient, setIsClient] = useState(false);
   const [image, setImage] = useState<File | null>(null);
-  const [tk, setTitleTk] = useState("");
+  const [gallery, setGallery] = useState<File[]>([]);
   const [en, setTitleEn] = useState("");
-  const [ru, setTitleRu] = useState("");
   const getTodayDate = () => {
     const today = new Date();
     return today.toISOString().split("T")[0];
   };
 
   const [date, setDate] = useState(getTodayDate());
-  const [text_tk, setTextTk] = useState("");
   const [text_en, setTextEn] = useState("");
-  const [text_ru, setTextRu] = useState("");
   const [news_cat_id, setNewsCat] = useState("");
   const [categories, setCategories] = useState<
-    { id: number; cat_tk: string; cat_en: string; cat_ru: string }[]
+    { id: number; cat_en: string }[]
   >([]);
 
   const router = useRouter();
@@ -62,14 +60,11 @@ const AddNews = () => {
 
     const formData = new FormData();
     if (image) formData.append("image", image);
-    formData.append("tk", tk ?? "");
     formData.append("en", en ?? "");
-    formData.append("ru", ru ?? "");
     formData.append("date", date ?? "");
-    formData.append("text_tk", text_tk ?? "");
     formData.append("text_en", text_en ?? "");
-    formData.append("text_ru", text_ru ?? "");
     formData.append("news_cat_id", news_cat_id ?? "");
+    gallery.forEach((f) => formData.append("gallery", f));
 
     try {
       const response = await fetch(
@@ -87,15 +82,12 @@ const AddNews = () => {
         const data = await response.json();
         console.log("добавлен!", data);
         setImage(null);
-        setTitleTk("");
+        setGallery([]);
         setTitleEn("");
-        setTitleRu("");
         setDate("");
-        setTextTk("");
         setTextEn("");
-        setTextRu("");
         setNewsCat("");
-        router.push("/admin/news"); // После добавления слайда редирект
+        router.push("/admin/news");
       } else {
         const errorText = await response.text();
         console.error("Ошибка при добавлении:", errorText);
@@ -167,7 +159,7 @@ const AddNews = () => {
                   <option value="">Select a category</option>
                   {categories.map((cat) => (
                     <option key={cat.id} value={cat.id}>
-                      {cat.cat_en} / {cat.cat_tk} / {cat.cat_ru}
+                      {cat.cat_en}
                     </option>
                   ))}
                 </select>
@@ -176,73 +168,28 @@ const AddNews = () => {
 
             {isClient && (
               <>
-                <div className="tabs tabs-lift">
-                  <input
-                    type="radio"
-                    name="my_tabs_3"
-                    className="tab"
-                    aria-label="Turkmen"
-                    defaultChecked
-                  />
-                  <div className="tab-content bg-base-100 border-base-300 p-6">
-                    <div className="mb-4">
-                      <label className="block text-gray-700 font-semibold mb-2">
-                        Title:
-                      </label>
-                      <TipTap content={tk} onChange={setTitleTk} />
-                    </div>
-                    <div className="mb-4">
-                      <label className="block text-gray-700 font-semibold mb-2">
-                        Text:
-                      </label>
-                      <TipTap content={text_tk} onChange={setTextTk} />
-                    </div>
-                  </div>
-
-                  <input
-                    type="radio"
-                    name="my_tabs_3"
-                    className="tab"
-                    aria-label="English"
-                  />
-                  <div className="tab-content bg-base-100 border-base-300 p-6">
-                    <div className="mb-4">
-                      <label className="block text-gray-700 font-semibold mb-2">
-                        Title:
-                      </label>
-                      <TipTap content={en} onChange={setTitleEn} />
-                    </div>
-                    <div className="mb-4">
-                      <label className="block text-gray-700 font-semibold mb-2">
-                        Text:
-                      </label>
-                      <TipTap content={text_en} onChange={setTextEn} />
-                    </div>
-                  </div>
-
-                  <input
-                    type="radio"
-                    name="my_tabs_3"
-                    className="tab"
-                    aria-label="Russian"
-                  />
-                  <div className="tab-content bg-base-100 border-base-300 p-6">
-                    <div className="mb-4">
-                      <label className="block text-gray-700 font-semibold mb-2">
-                        Title:
-                      </label>
-                      <TipTap content={ru} onChange={setTitleRu} />
-                    </div>
-                    <div className="mb-4">
-                      <label className="block text-gray-700 font-semibold mb-2">
-                        Text:
-                      </label>
-                      <TipTap content={text_ru} onChange={setTextRu} />
-                    </div>
-                  </div>
+                <div className="mb-4">
+                  <label className="block text-gray-700 font-semibold mb-2">
+                    Title:
+                  </label>
+                  <TipTap content={en} onChange={setTitleEn} />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-gray-700 font-semibold mb-2">
+                    Text:
+                  </label>
+                  <TipTap content={text_en} onChange={setTextEn} />
                 </div>
               </>
             )}
+
+            <div className="mb-4">
+              <GalleryPicker
+                files={gallery}
+                onChange={setGallery}
+                label="Gallery images (optional)"
+              />
+            </div>
 
             <button
               type="submit"

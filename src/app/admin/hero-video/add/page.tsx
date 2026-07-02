@@ -1,23 +1,14 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Sidebar from "@/Components/Sidebar";
 import TokenTimer from "@/Components/TokenTimer";
-import TipTap from "@/Components/TipTapEditor";
 
 const AddSlider = () => {
-  const [isClient, setIsClient] = useState(false);
-  const [image, setImage] = useState<File | null>(null);
-  const [tk, setTitleTk] = useState("");
-  const [en, setTitleEn] = useState("");
-  const [ru, setTitleRu] = useState("");
+  const [video, setVideo] = useState<File | null>(null);
 
   const router = useRouter();
-
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,10 +20,8 @@ const AddSlider = () => {
     }
 
     const formData = new FormData();
-    if (image) formData.append("image", image);
-    formData.append("tk", tk ?? "");
-    formData.append("en", en ?? "");
-    formData.append("ru", ru ?? "");
+    if (video) formData.append("video", video);
+    formData.append("en", "");
 
     try {
       const response = await fetch(
@@ -49,12 +38,9 @@ const AddSlider = () => {
       if (response.ok) {
         const data = await response.json();
         console.log("добавлен!", data);
-        setImage(null);
-        setTitleTk("");
-        setTitleEn("");
-        setTitleRu("");
+        setVideo(null);
 
-        router.push("/admin/sliders");
+        router.push("/admin/hero-video");
       } else {
         const errorText = await response.text();
         console.error("Ошибка при добавлении слайда:", errorText);
@@ -74,22 +60,22 @@ const AddSlider = () => {
             onSubmit={handleSubmit}
             className="w-full mx-auto p-6 border border-gray-300 rounded-lg shadow-lg bg-white"
           >
-            <h2 className="text-2xl font-bold mb-4 text-left">Add new slide</h2>
+            <h2 className="text-2xl font-bold mb-4 text-left">Add hero video</h2>
 
             <div className="mb-4">
               <label
-                htmlFor="image"
+                htmlFor="video"
                 className="block text-gray-700 font-semibold mb-2"
               >
-                Image:
+                Video (mp4 / webm):
               </label>
               <input
                 type="file"
-                id="image"
-                accept="image/*"
+                id="video"
+                accept="video/mp4,video/webm"
                 onChange={(e) => {
                   if (e.target.files && e.target.files[0]) {
-                    setImage(e.target.files[0]);
+                    setVideo(e.target.files[0]);
                   }
                 }}
                 required
@@ -97,42 +83,11 @@ const AddSlider = () => {
               />
             </div>
 
-            {isClient && (
-              <>
-                <div className="mb-4">
-                  <label className="block text-gray-700 font-semibold mb-2">
-                    Title Tk:
-                  </label>
-                  <TipTap
-                    content={tk}
-                    onChange={(content) => setTitleTk(content)}
-                  />
-                </div>
-
-                <div className="mb-4">
-                  <label className="block text-gray-700 font-semibold mb-2">
-                    Title En:
-                  </label>
-                  <TipTap
-                    content={en}
-                    onChange={(content) => setTitleEn(content)}
-                  />
-                </div>
-
-                <div className="mb-4">
-                  <label className="block text-gray-700 font-semibold mb-2">
-                    Title Ru:
-                  </label>
-                  <TipTap content={ru} onChange={setTitleRu} />
-                </div>
-              </>
-            )}
-
             <button
               type="submit"
               className="w-full bg hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-150"
             >
-              Add slider
+              Add hero video
             </button>
           </form>
         </div>

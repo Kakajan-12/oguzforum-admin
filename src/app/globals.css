@@ -21,9 +21,49 @@ body {
 }
 
 .color{
-  color:#002A5F
+  color:#1268B3
 }
 
 .bg{
-  background-color: #002A5F;
+  background-color: #1268B3;
 }
+
+/* Shared admin UI helpers (used across list/form pages) */
+.admin-page {
+  background-color: #f3f4f6;
+  min-height: 100vh;
+}
+.admin-card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+}
+.admin-btn {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  background: #1268B3; color: #fff; font-weight: 500;
+  padding: 0.5rem 1rem; border-radius: 0.5rem;
+  transition: background-color .15s ease;
+}
+.admin-btn:hover { background: #0f5694; }
+.admin-btn-ghost {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  color: #374151; font-weight: 500;
+  padding: 0.4rem 0.8rem; border-radius: 0.5rem; border: 1px solid #e5e7eb;
+  transition: all .15s ease; background:#fff;
+}
+.admin-btn-ghost:hover { border-color:#1268B3; color:#1268B3; }
+.admin-btn-danger {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  color: #dc2626; font-weight: 500;
+  padding: 0.4rem 0.8rem; border-radius: 0.5rem; border: 1px solid #fecaca;
+  transition: all .15s ease; background:#fff;
+}
+.admin-btn-danger:hover { background:#fef2f2; }
+.admin-input {
+  width: 100%; border: 1px solid #d1d5db; background:#f9fafb;
+  border-radius: 0.5rem; padding: 0.55rem 0.85rem; font-size: 0.9rem;
+  outline: none; transition: border-color .15s ease, background .15s ease;
+}
+.admin-input:focus { border-color:#1268B3; background:#fff; }
+.admin-label { display:block; font-size:0.8rem; font-weight:600; color:#374151; margin-bottom:0.35rem; }

@@ -11,7 +11,7 @@ const EditCookie = () => {
     const { id } = useParams();
     const router = useRouter();
 
-    const [data, setData] = useState({ tk: '', en: '', ru: ''});
+    const [data, setData] = useState({ en: ''});
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
 
@@ -29,9 +29,7 @@ const EditCookie = () => {
                     const rawData = response.data[0];
 
                     setData({
-                        tk: rawData.tk || '',
                         en: rawData.en || '',
-                        ru: rawData.ru || '',
                     });
 
                     setLoading(false);
@@ -85,39 +83,12 @@ const EditCookie = () => {
                 <div className="mt-8">
                     <h1 className="text-2xl font-bold mb-4">Edit Cookie</h1>
                     <form onSubmit={handleSubmit} className="space-y-6 bg-white p-6 rounded shadow">
-                        <div className="tabs tabs-lift">
-                            <input type="radio" name="my_tabs_3" className="tab" aria-label="Turkmen" defaultChecked/>
-                            <div className="tab-content bg-base-100 border-base-300 p-6">
-                                <div className="mb-4">
-                                    <label className="block font-semibold mb-2">Title</label>
-                                    <TipTap
-                                        content={data.tk}
-                                        onChange={(content) => handleEditorChange('tk', content)}
-                                    />
-                                </div>
-                            </div>
-
-                            <input type="radio" name="my_tabs_3" className="tab" aria-label="English"/>
-                            <div className="tab-content bg-base-100 border-base-300 p-6">
-                                <div className="mb-4">
-                                    <label className="block font-semibold mb-2">Title:</label>
-                                    <TipTap
-                                        content={data.en}
-                                        onChange={(content) => handleEditorChange('en', content)}
-                                    />
-                                </div>
-                            </div>
-
-                            <input type="radio" name="my_tabs_3" className="tab" aria-label="Russian"/>
-                            <div className="tab-content bg-base-100 border-base-300 p-6">
-                                <div className="mb-4">
-                                    <label className="block font-semibold mb-2">Title:</label>
-                                    <TipTap
-                                        content={data.ru}
-                                        onChange={(content) => handleEditorChange('ru', content)}
-                                    />
-                                </div>
-                            </div>
+                        <div className="mb-4">
+                            <label className="block font-semibold mb-2">Title:</label>
+                            <TipTap
+                                content={data.en}
+                                onChange={(content) => handleEditorChange('en', content)}
+                            />
                         </div>
 
                         <button

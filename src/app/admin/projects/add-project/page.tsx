@@ -5,31 +5,25 @@ import {useRouter} from 'next/navigation';
 import Sidebar from '@/Components/Sidebar';
 import TokenTimer from '@/Components/TokenTimer';
 import TipTap from '@/Components/TipTapEditor';
+import GalleryPicker from '@/Components/GalleryPicker';
 
 type Location = {
     id: number;
-    location_tk: string;
     location_en: string;
-    location_ru: string;
 };
 
 type Type = {
     id: number;
-    type_tk: string;
     type_en: string;
-    type_ru: string;
 };
 
 const AddProject = () => {
     const [isClient, setIsClient] = useState(false);
     const [image, setImage] = useState<File | null>(null);
     const [logo, setLogo] = useState<File | null>(null);
-    const [tk, setTitleTk] = useState('');
+    const [gallery, setGallery] = useState<File[]>([]);
     const [en, setTitleEn] = useState('');
-    const [ru, setTitleRu] = useState('');
-    const [text_tk, setTextTk] = useState('');
     const [text_en, setTextEn] = useState('');
-    const [text_ru, setTextRu] = useState('');
     const [date, setDate] = useState('');
     const [endDate, setEndDate] = useState('');
     const [link, setLink] = useState('');
@@ -44,11 +38,11 @@ const AddProject = () => {
     const [media, setMedia] = useState('');
     const [loading, setLoading] = useState(false);
     const [organizers, setOrganizers] = useState<
-        { organizer_tk: string; organizer_en: string; organizer_ru: string; organizer_logo: File | null }[]
-    >([{organizer_tk: '', organizer_en: '', organizer_ru: '', organizer_logo: null}]);
+        { organizer_en: string; organizer_logo: File | null }[]
+    >([{organizer_en: '', organizer_logo: null}]);
 
     const addOrganizer = () => {
-        setOrganizers([...organizers, {organizer_tk: '', organizer_en: '', organizer_ru: '', organizer_logo: null}]);
+        setOrganizers([...organizers, {organizer_en: '', organizer_logo: null}]);
     };
 
     const removeOrganizer = (index: number) => {
@@ -59,6 +53,24 @@ const AddProject = () => {
         const updated = [...organizers];
         updated[index] = {...updated[index], [field]: value};
         setOrganizers(updated);
+    };
+
+    const [participants, setParticipants] = useState<
+        { participant_en: string; participant_logo: File | null }[]
+    >([{participant_en: '', participant_logo: null}]);
+
+    const addParticipant = () => {
+        setParticipants([...participants, {participant_en: '', participant_logo: null}]);
+    };
+
+    const removeParticipant = (index: number) => {
+        setParticipants(participants.filter((_, i) => i !== index));
+    };
+
+    const updateParticipant = (index: number, field: string, value: string | File | null) => {
+        const updated = [...participants];
+        updated[index] = {...updated[index], [field]: value};
+        setParticipants(updated);
     };
 
     const router = useRouter();
@@ -109,12 +121,8 @@ const AddProject = () => {
         const formData = new FormData();
         if (image) formData.append('image', image);
         if (logo) formData.append('logo', logo);
-        formData.append('tk', tk);
         formData.append('en', en);
-        formData.append('ru', ru);
-        formData.append('text_tk', text_tk);
         formData.append('text_en', text_en);
-        formData.append('text_ru', text_ru);
         formData.append('date', date);
         formData.append('end_date', endDate);
         formData.append('link', link);
@@ -125,15 +133,27 @@ const AddProject = () => {
         formData.append('countries', countries);
         formData.append('companies', companies);
         formData.append('media', media);
-        if (organizers.some(o => o.organizer_tk || o.organizer_en || o.organizer_ru || o.organizer_logo)) {
+        gallery.forEach((f) => formData.append('gallery', f));
+        if (organizers.some(o => o.organizer_en || o.organizer_logo)) {
             formData.append('organizers', JSON.stringify(organizers.map(o => ({
-                organizer_tk: o.organizer_tk,
                 organizer_en: o.organizer_en,
-                organizer_ru: o.organizer_ru,
             }))));
             organizers.forEach(o => {
                 if (o.organizer_logo) {
                     formData.append('organizer_logo', o.organizer_logo);
+                }
+            });
+        }
+        // Only send participants that have a logo, so the JSON order and the
+        // uploaded file order line up 1:1 on the backend.
+        const validParticipants = participants.filter(p => p.participant_logo);
+        if (validParticipants.length > 0) {
+            formData.append('participants', JSON.stringify(validParticipants.map(p => ({
+                participant_en: p.participant_en,
+            }))));
+            validParticipants.forEach(p => {
+                if (p.participant_logo) {
+                    formData.append('participant_logo', p.participant_logo);
                 }
             });
         }
@@ -260,7 +280,7 @@ const AddProject = () => {
                                         <option value="">Select location</option>
                                         {locations.map((loc) => (
                                             <option key={loc.id} value={loc.id}>
-                                                {loc.location_en} / {loc.location_tk} / {loc.location_ru}
+                                                {loc.location_en}
                                             </option>
                                         ))}
                                     </select>
@@ -279,7 +299,7 @@ const AddProject = () => {
                                         <option value="">Select type</option>
                                         {types.map((type) => (
                                             <option key={type.id} value={type.id}>
-                                                {type.type_en} / {type.type_tk} / {type.type_ru}
+                                                {type.type_en}
                                             </option>
                                         ))}
                                     </select>
@@ -360,72 +380,28 @@ const AddProject = () => {
                         </div>
 
                         {isClient && (
-                            <>
-                                <div className="tabs tabs-lift">
-                                    <input type="radio" name="my_tabs_3" className="tab" aria-label="Turkmen"
-                                           defaultChecked/>
-                                    <div className="tab-content bg-base-100 border-base-300 p-6">
-                                        <div className="mb-4">
-                                            <label className="block text-gray-700 font-semibold mb-2">Title:</label>
-                                            <TipTap content={tk} onChange={setTitleTk} />
-                                        </div>
-                                        <div className="mb-4">
-                                            <label className="block text-gray-700 font-semibold mb-2">Text:</label>
-                                            <TipTap content={text_tk} onChange={setTextTk} />
-                                        </div>
-                                    </div>
-
-                                    <input type="radio" name="my_tabs_3" className="tab" aria-label="English"/>
-                                    <div className="tab-content bg-base-100 border-base-300 p-6">
-                                        <div className="mb-4">
-                                            <label className="block text-gray-700 font-semibold mb-2">Title:</label>
-                                            <TipTap content={en} onChange={setTitleEn} />
-                                        </div>
-                                        <div className="mb-4">
-                                            <label className="block text-gray-700 font-semibold mb-2">Text:</label>
-                                            <TipTap content={text_en} onChange={setTextEn} />
-                                        </div>
-                                    </div>
-
-                                    <input type="radio" name="my_tabs_3" className="tab" aria-label="Russian"/>
-                                    <div className="tab-content bg-base-100 border-base-300 p-6">
-                                        <div className="mb-4">
-                                            <label className="block text-gray-700 font-semibold mb-2">Title:</label>
-                                            <TipTap content={ru} onChange={setTitleRu} />
-                                        </div>
-                                        <div className="mb-4">
-                                            <label className="block text-gray-700 font-semibold mb-2">Text:</label>
-                                            <TipTap content={text_ru} onChange={setTextRu} />
-                                        </div>
-                                    </div>
+                            <div className="bg-base-100 border border-gray-200 rounded-md p-6">
+                                <div className="mb-4">
+                                    <label className="block text-gray-700 font-semibold mb-2">Title:</label>
+                                    <TipTap content={en} onChange={setTitleEn} />
                                 </div>
-                            </>
+                                <div className="mb-4">
+                                    <label className="block text-gray-700 font-semibold mb-2">Text:</label>
+                                    <TipTap content={text_en} onChange={setTextEn} />
+                                </div>
+                            </div>
                         )}
 
                         <div className="mb-6">
                             <h3 className="text-xl font-semibold mb-3">Organizers</h3>
                             {organizers.map((org, index) => (
                                 <div key={index} className="border rounded-lg p-4 mb-3 bg-gray-50">
-                                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <input
                                             type="text"
-                                            placeholder="Organizer (TM)"
-                                            value={org.organizer_tk}
-                                            onChange={(e) => updateOrganizer(index, 'organizer_tk', e.target.value)}
-                                            className="border border-gray-300 rounded p-2 w-full"
-                                        />
-                                        <input
-                                            type="text"
-                                            placeholder="Organizer (EN)"
+                                            placeholder="Organizer"
                                             value={org.organizer_en}
                                             onChange={(e) => updateOrganizer(index, 'organizer_en', e.target.value)}
-                                            className="border border-gray-300 rounded p-2 w-full"
-                                        />
-                                        <input
-                                            type="text"
-                                            placeholder="Organizer (RU)"
-                                            value={org.organizer_ru}
-                                            onChange={(e) => updateOrganizer(index, 'organizer_ru', e.target.value)}
                                             className="border border-gray-300 rounded p-2 w-full"
                                         />
                                         <input
@@ -457,6 +433,54 @@ const AddProject = () => {
                             </button>
                         </div>
 
+                        <div className="mb-6">
+                            <h3 className="text-xl font-semibold mb-3">Participant companies</h3>
+                            {participants.map((prt, index) => (
+                                <div key={index} className="border rounded-lg p-4 mb-3 bg-gray-50">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <input
+                                            type="text"
+                                            placeholder="Company name (optional)"
+                                            value={prt.participant_en}
+                                            onChange={(e) => updateParticipant(index, 'participant_en', e.target.value)}
+                                            className="border border-gray-300 rounded p-2 w-full"
+                                        />
+                                        <input
+                                            type="file"
+                                            accept="image/*"
+                                            onChange={(e) => updateParticipant(index, 'participant_logo', e.target.files?.[0] || null)}
+                                            className="border border-gray-300 rounded p-2 w-full"
+                                        />
+                                    </div>
+
+                                    {participants.length > 1 && (
+                                        <button
+                                            type="button"
+                                            onClick={() => removeParticipant(index)}
+                                            className="text-red-600 text-sm mt-2"
+                                        >
+                                            Remove company
+                                        </button>
+                                    )}
+                                </div>
+                            ))}
+
+                            <button
+                                type="button"
+                                onClick={addParticipant}
+                                className="bg-blue-600 text-white px-3 py-1 rounded"
+                            >
+                                + Add company
+                            </button>
+                        </div>
+
+                        <div className="mb-6">
+                            <GalleryPicker
+                                files={gallery}
+                                onChange={setGallery}
+                                label="Gallery images (optional)"
+                            />
+                        </div>
 
                         <button
                             type="submit"

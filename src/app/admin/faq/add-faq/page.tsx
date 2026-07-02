@@ -10,12 +10,8 @@ const AddFaq = () => {
     const router = useRouter();
 
     const [isClient, setIsClient] = useState(false);
-    const [tk, setTitleTk] = useState('');
     const [en, setTitleEn] = useState('');
-    const [ru, setTitleRu] = useState('');
-    const [text_tk, setTextTk] = useState('');
     const [text_en, setTextEn] = useState('');
-    const [text_ru, setTextRu] = useState('');
 
 
     useEffect(() => {
@@ -32,12 +28,8 @@ const AddFaq = () => {
         }
 
         const body = {
-            tk,
             en,
-            ru,
-            text_tk,
             text_en,
-            text_ru
         };
 
         try {
@@ -52,12 +44,8 @@ const AddFaq = () => {
 
             if (response.ok) {
                 await response.json();
-                setTitleTk('');
                 setTitleEn('');
-                setTitleRu('');
-                setTextTk('');
                 setTextEn('');
-                setTextRu('');
                 router.push('/admin/faq');
             } else {
                 const errorText = await response.text();
@@ -81,63 +69,22 @@ const AddFaq = () => {
                         <h2 className="text-2xl font-bold mb-4 text-left">Add FAQ</h2>
 
                         {isClient && (
-                            <div className="tabs tabs-lift tabs-bordered">
-                                <input type="radio" name="faq_tabs" className="tab" aria-label="Turkmen"
-                                       defaultChecked/>
-                                <div className="tab-content bg-base-100 border border-gray-200 rounded-md p-4">
-                                    <div className="mb-4">
-                                        <label className="block text-gray-700 font-semibold mb-2">Question (TK):</label>
-                                        <input
-                                            value={tk}
-                                            onChange={(e) => setTitleTk(e.target.value)}
-                                            type="text"
-                                            required
-                                            className="border border-gray-300 rounded p-2 w-full"
-                                        />
-                                    </div>
-                                    <div className="mb-4">
-                                        <label className="block text-gray-700 font-semibold mb-2">Answer (TK):</label>
-                                        <TipTap content={text_tk} onChange={setTextTk} />
-                                    </div>
+                            <div className="bg-base-100 border border-gray-200 rounded-md p-4">
+                                <div className="mb-4">
+                                    <label className="block text-gray-700 font-semibold mb-2">Question:</label>
+                                    <input
+                                        value={en}
+                                        onChange={(e) => setTitleEn(e.target.value)}
+                                        type="text"
+                                        required
+                                        className="border border-gray-300 rounded p-2 w-full"
+                                    />
                                 </div>
-
-                                <input type="radio" name="faq_tabs" className="tab" aria-label="English"/>
-                                <div className="tab-content bg-base-100 border border-gray-200 rounded-md p-4">
-                                    <div className="mb-4">
-                                        <label className="block text-gray-700 font-semibold mb-2">Question (EN):</label>
-                                        <input
-                                            value={en}
-                                            onChange={(e) => setTitleEn(e.target.value)}
-                                            type="text"
-                                            required
-                                            className="border border-gray-300 rounded p-2 w-full"
-                                        />
-                                    </div>
-                                    <div className="mb-4">
-                                        <label className="block text-gray-700 font-semibold mb-2">Answer (EN):</label>
-                                        <TipTap content={text_en} onChange={setTextEn} />
-                                    </div>
-                                </div>
-
-                                <input type="radio" name="faq_tabs" className="tab" aria-label="Russian"/>
-                                <div className="tab-content bg-base-100 border border-gray-200 rounded-md p-4">
-                                    <div className="mb-4">
-                                        <label className="block text-gray-700 font-semibold mb-2">Question (RU):</label>
-                                        <input
-                                            value={ru}
-                                            onChange={(e) => setTitleRu(e.target.value)}
-                                            type="text"
-                                            required
-                                            className="border border-gray-300 rounded p-2 w-full"
-                                        />
-                                    </div>
-                                    <div className="mb-4">
-                                        <label className="block text-gray-700 font-semibold mb-2">Answer (RU):</label>
-                                        <TipTap content={text_ru} onChange={setTextRu} />
-                                    </div>
+                                <div className="mb-4">
+                                    <label className="block text-gray-700 font-semibold mb-2">Answer:</label>
+                                    <TipTap content={text_en} onChange={setTextEn} />
                                 </div>
                             </div>
-
                         )}
 
                         <button

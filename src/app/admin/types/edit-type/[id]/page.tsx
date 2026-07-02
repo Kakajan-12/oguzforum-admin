@@ -7,9 +7,7 @@ import TokenTimer from "@/Components/TokenTimer";
 import { DocumentIcon } from "@heroicons/react/16/solid";
 
 type Data = {
-    type_tk: string;
     type_en: string;
-    type_ru: string;
 };
 
 const EditTypes = () => {
@@ -17,9 +15,7 @@ const EditTypes = () => {
     const router = useRouter();
 
     const [data, setData] = useState<Data>({
-        type_tk: '',
         type_en: '',
-        type_ru: '',
     });
 
     const [loading, setLoading] = useState<boolean>(true);
@@ -37,9 +33,7 @@ const EditTypes = () => {
 
                 const type = response.data[0]; // If API returns array
                 setData({
-                    type_tk: type.type_tk || '',
                     type_en: type.type_en || '',
-                    type_ru: type.type_ru || '',
                 });
             } catch (err) {
                 const axiosError = err as AxiosError;
@@ -87,34 +81,10 @@ const EditTypes = () => {
                     <h1 className="text-2xl font-bold mb-6">Edit Types</h1>
                     <form onSubmit={handleSubmit} className="space-y-6 bg-white p-6 rounded shadow">
                         <div>
-                            <label className="block text-gray-700 font-semibold mb-2">Turkmen:</label>
-                            <input
-                                name="type_tk"
-                                value={data.type_tk}
-                                onChange={handleChange}
-                                type="text"
-                                required
-                                className="border border-gray-300 rounded p-2 w-full"
-                            />
-                        </div>
-
-                        <div>
                             <label className="block text-gray-700 font-semibold mb-2">English:</label>
                             <input
                                 name="type_en"
                                 value={data.type_en}
-                                onChange={handleChange}
-                                type="text"
-                                required
-                                className="border border-gray-300 rounded p-2 w-full"
-                            />
-                        </div>
-
-                        <div>
-                            <label className="block text-gray-700 font-semibold mb-2">Russian:</label>
-                            <input
-                                name="type_ru"
-                                value={data.type_ru}
                                 onChange={handleChange}
                                 type="text"
                                 required

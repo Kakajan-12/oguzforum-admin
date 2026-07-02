@@ -47,14 +47,23 @@ const TokenTimer = () => {
     }, [router]);
 
     return (
-        <div>
-            <h1 className="text-4xl font-bold mb-6">Admin Panel</h1>
-            {/* Show message if token is invalid */}
-            <p className="text-lg mb-4">
+        <div className="mb-6 flex justify-end">
+            <span
+                className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium shadow-sm ${
+                    isTokenValid
+                        ? "bg-white text-gray-400"
+                        : "bg-red-50 text-red-500"
+                }`}
+            >
+                <span
+                    className={`h-2 w-2 rounded-full ${
+                        isTokenValid ? "bg-green-400" : "bg-red-400"
+                    }`}
+                />
                 {isTokenValid
-                    ? `Expiration Date: ${expirationDate}`
-                    : 'Token is invalid or expired. Please log in again.'}
-            </p>
+                    ? `Session until ${expirationDate}`
+                    : "Session expired — please log in again"}
+            </span>
         </div>
     );
 };

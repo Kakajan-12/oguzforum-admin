@@ -15,30 +15,20 @@ import {
 interface Organizer {
     id: number;
     organizer_logo: string;
-    organizer_tk: string;
     organizer_en: string;
-    organizer_ru: string;
 }
 
 interface Project {
     id: number;
     image: string;
     logo: string;
-    tk: string;
-    text_tk: string;
-    location_tk: string;
-    type_tk: string;
     en: string;
     text_en: string;
     location_en: string;
     type_en: string;
-    ru: string;
-    text_ru: string;
     date: string;
     end_date: string;
     link: string;
-    location_ru: string;
-    type_ru: string;
     speakers: string;
     delegates: string;
     countries: string;
@@ -204,9 +194,7 @@ const ViewProject = () => {
                                                     />
                                                 )}
                                                 <div>
-                                                    <p><strong>TM:</strong> {org.organizer_tk}</p>
-                                                    <p><strong>EN:</strong> {org.organizer_en}</p>
-                                                    <p><strong>RU:</strong> {org.organizer_ru}</p>
+                                                    <p><strong>Organizer:</strong> {org.organizer_en}</p>
                                                 </div>
                                             </div>
                                         ))}
@@ -218,14 +206,14 @@ const ViewProject = () => {
                                 <div>
                                     Start date:{" "}
                                     <span className="font-bolder">
-                                    {new Date(data.date).toLocaleDateString("tm-TM")}
+                                    {new Date(data.date).toLocaleDateString("en-US")}
                                 </span>
                                 </div>
 
                                 <div>
                                     End date:{" "}
                                     <span className="font-bolder">
-                                    {new Date(data.end_date).toLocaleDateString("tm-TM")}
+                                    {new Date(data.end_date).toLocaleDateString("en-US")}
                                 </span>
                                 </div>
                                 <div>
@@ -251,34 +239,6 @@ const ViewProject = () => {
 
                         <div className="space-y-10 divide-y-1 ml-4">
                             <div className="mb-10 space-y-4">
-                                <div className="font-bold text-lg mb-4">Turkmen</div>
-                                {data.tk && (
-                                    <div>
-                                        <strong>Title:</strong>
-                                        <div dangerouslySetInnerHTML={{__html: data.tk}}/>
-                                    </div>
-                                )}
-                                {data.text_tk && (
-                                    <div>
-                                        <strong>Text:</strong>
-                                        <div dangerouslySetInnerHTML={{__html: data.text_tk}}/>
-                                    </div>
-                                )}
-                                {data.location_tk && (
-                                    <div>
-                                        <strong>Location:</strong>
-                                        <div dangerouslySetInnerHTML={{__html: data.location_tk}}/>
-                                    </div>
-                                )}
-                                {data.type_tk && (
-                                    <div>
-                                    <strong>Type:</strong>
-                                        <div dangerouslySetInnerHTML={{__html: data.type_tk}}/>
-                                    </div>
-                                )}
-                            </div>
-                            <div className="mb-10 space-y-4">
-                                <div className="font-bold text-lg mb-4">English</div>
                                 {data.en && (
                                     <div>
                                         <strong>Title:</strong>
@@ -305,34 +265,6 @@ const ViewProject = () => {
                                     </div>
                                 )}
                             </div>
-                            <div className="mb-10 space-y-4">
-                                <div className="font-bold text-lg mb-4">Russian</div>
-                                {data.ru && (
-                                    <div>
-                                        <strong>Title:</strong>
-                                        <div dangerouslySetInnerHTML={{__html: data.ru}}/>
-                                    </div>
-                                )}
-                                {data.text_ru && (
-                                    <div>
-                                        <strong>Text:</strong>
-                                        <div dangerouslySetInnerHTML={{__html: data.text_ru}}/>
-                                    </div>
-                                )}
-                                {data.location_ru && (
-                                    <div>
-                                        <strong>Location:</strong>
-                                        <div dangerouslySetInnerHTML={{__html: data.location_ru}}/>
-                                    </div>
-                                )}
-                                {data.type_ru && (
-                                    <div>
-                                        <strong>Type:</strong>
-                                        <div dangerouslySetInnerHTML={{__html: data.type_ru}}/>
-                                    </div>
-                                )}
-                            </div>
-
                         </div>
                     </div>
                 </div>
