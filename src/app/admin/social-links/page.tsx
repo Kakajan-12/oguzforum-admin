@@ -8,8 +8,9 @@ import axios, { AxiosError } from 'axios';
 import { useRouter } from 'next/navigation';
 import {
     TrashIcon,
-    PencilIcon,
-    PlusCircleIcon
+    PencilSquareIcon,
+    PlusIcon,
+    LinkIcon,
 } from "@heroicons/react/16/solid";
 import FacebookIcon from '@mui/icons-material/Facebook';
 import InstagramIcon from '@mui/icons-material/Instagram';
@@ -109,95 +110,140 @@ const SocialLinks = () => {
         }
     };
 
-    if (loading) return <div>Loading...</div>;
-    if (error) return <div className="text-red-500">{error}</div>;
+    if (loading) return (
+        <div className="admin-page flex">
+            <Sidebar />
+            <div className="ml-64 flex-1 p-8 lg:p-10 text-gray-500">Loading...</div>
+        </div>
+    );
+    if (error) return (
+        <div className="admin-page flex">
+            <Sidebar />
+            <div className="ml-64 flex-1 p-8 lg:p-10 text-red-600">{error}</div>
+        </div>
+    );
 
     return (
-        <div className="flex bg-gray-200 min-h-screen">
+        <div className="admin-page flex">
             <Sidebar />
-            <div className="flex-1 p-10 ml-62">
+            <div className="ml-64 flex-1 p-8 lg:p-10">
                 <TokenTimer />
-                <div className="mt-8">
-                    <div className="w-full flex justify-between">
-                        <h2 className="text-2xl font-bold mb-4">Social Links</h2>
-                        <Link href="/admin/social-links/add-link" className="bg text-white py-2 px-8 rounded-md cursor-pointer flex items-center">
-                            <PlusCircleIcon className="w-6 h-6" color="#ffffff" />
-                            <div className="ml-2">Add</div>
-                        </Link>
+
+                <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                        <h1 className="text-2xl font-bold text-gray-900">Social Links</h1>
+                        <p className="mt-1 text-sm text-gray-500">
+                            {links.length} link{links.length === 1 ? "" : "s"}
+                        </p>
                     </div>
-                    <table className="min-w-full bg-white border border-gray-200 rounded-lg">
-                        <thead>
-                        <tr>
-                            <th className="py-2 px-4 border-b-2 border-gray-200 text-left text-gray-600">Icon</th>
-                            <th className="py-2 px-4 border-b-2 border-gray-200 text-left text-gray-600">Url</th>
-                            <th className="py-2 px-4 border-b-2 border-gray-200 text-left text-gray-600">Edit</th>
-                            <th className="py-2 px-4 border-b-2 border-gray-200 text-left text-gray-600">Delete</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {links.length === 0 ? (
-                            <tr>
-                                <td colSpan={4} className="text-center py-4">No data available</td>
+                    <Link href="/admin/social-links/add-link" className="admin-btn whitespace-nowrap">
+                        <PlusIcon className="size-5" /> Add
+                    </Link>
+                </div>
+
+                <div className="admin-card overflow-hidden">
+                    <div className="overflow-x-auto">
+                        <table className="min-w-full text-sm">
+                            <thead>
+                            <tr className="border-b border-gray-200 bg-gray-50 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">
+                                <th className="px-5 py-3">Icon</th>
+                                <th className="px-5 py-3">URL</th>
+                                <th className="px-5 py-3 text-right">Actions</th>
                             </tr>
-                        ) : (
-                            links.map((link) => (
-                                <tr key={link.id}>
-                                    <td className="py-4 px-4 border-b border-gray-200">
-                                        {getIconComponent(link.icon)}
-                                    </td>
-                                    <td className="py-4 px-4 border-b border-gray-200 w-full">
-                                        <a href={link.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
-                                            {link.url}
-                                        </a>
-                                    </td>
-                                    <td className="py-4 px-4 border-b border-gray-200">
-                                        <Link href={`/admin/social-links/edit-link/${link.id}`}
-                                              className="bg text-white py-2 px-8 rounded-md cursor-pointer flex w-32 justify-center items-center">
-                                            <PencilIcon className="w-5 h-5" color="#ffffff" />
-                                            <div className="ml-2">Edit</div>
-                                        </Link>
-                                    </td>
-                                    <td className="py-4 px-4 border-b border-gray-200">
-                                        <button
-                                            onClick={() => {
-                                                setDeleteId(link.id);
-                                                setShowModal(true);
-                                            }}
-                                            className="bg-red-700 text-white py-2 px-8 rounded-md cursor-pointer flex w-32 justify-center items-center"
-                                        >
-                                            <TrashIcon className="w-5 h-5" color="#ffffff" />
-                                            <div className="ml-2">Delete</div>
-                                        </button>
+                            </thead>
+                            <tbody className="divide-y divide-gray-100">
+                            {links.length === 0 ? (
+                                <tr>
+                                    <td colSpan={3} className="px-5 py-10 text-center text-gray-400">
+                                        No social links yet
                                     </td>
                                 </tr>
-                            ))
-                        )}
-                        </tbody>
-                    </table>
+                            ) : (
+                                links.map((link) => (
+                                    <tr key={link.id} className="transition-colors hover:bg-gray-50">
+                                        <td className="px-5 py-3">
+                                            <div className="flex items-center gap-2.5">
+                                                <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#1268B3]/10 text-[#1268B3]">
+                                                    {getIconComponent(link.icon)}
+                                                </span>
+                                                <span className="font-medium capitalize text-gray-800">{link.icon}</span>
+                                            </div>
+                                        </td>
+                                        <td className="px-5 py-3">
+                                            <a
+                                                href={link.url}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="inline-flex max-w-md items-center gap-1.5 truncate text-[#1268B3] hover:underline"
+                                            >
+                                                <LinkIcon className="size-4 shrink-0 text-gray-400" />
+                                                <span className="truncate">{link.url}</span>
+                                            </a>
+                                        </td>
+                                        <td className="px-5 py-3">
+                                            <div className="flex items-center justify-end gap-2">
+                                                <Link
+                                                    href={`/admin/social-links/edit-link/${link.id}`}
+                                                    className="admin-btn-ghost"
+                                                    title="Edit"
+                                                >
+                                                    <PencilSquareIcon className="size-4" />
+                                                </Link>
+                                                <button
+                                                    onClick={() => {
+                                                        setDeleteId(link.id);
+                                                        setShowModal(true);
+                                                    }}
+                                                    className="admin-btn-danger"
+                                                    title="Delete"
+                                                >
+                                                    <TrashIcon className="size-4" />
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))
+                            )}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 
             {/* Modal */}
             {showModal && (
-                <div className="fixed inset-0 bg-opacity-50 flex justify-center items-center z-50">
-                    <div className="bg-white p-6 rounded-lg">
-                        <p className="text-lg font-medium mb-4">Удалить ссылку?</p>
-                        <div className="flex justify-end space-x-4">
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                    <div
+                        className="fixed inset-0 bg-black/40"
+                        onClick={() => !isDeleting && setShowModal(false)}
+                    />
+                    <div className="relative w-full max-w-md rounded-xl bg-white p-6 shadow-xl">
+                        <div className="mb-4 flex items-center gap-3">
+                            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-red-100 text-red-600">
+                                <TrashIcon className="size-5" />
+                            </div>
+                            <h2 className="text-lg font-bold text-gray-900">Delete link</h2>
+                        </div>
+                        <p className="mb-6 text-sm text-gray-500">
+                            Are you sure you want to delete this social link? This action cannot be undone.
+                        </p>
+                        <div className="flex justify-end gap-3">
                             <button
                                 onClick={() => {
                                     setDeleteId(null);
                                     setShowModal(false);
                                 }}
-                                className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+                                className="admin-btn-ghost"
+                                disabled={isDeleting}
                             >
-                                Отмена
+                                Cancel
                             </button>
                             <button
                                 onClick={handleDelete}
-                                className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+                                className="inline-flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-60"
                                 disabled={isDeleting}
                             >
-                                {isDeleting ? 'Удаление...' : 'Удалить'}
+                                {isDeleting ? 'Deleting...' : 'Delete'}
                             </button>
                         </div>
                     </div>

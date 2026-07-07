@@ -5,12 +5,14 @@ import axios, {AxiosError} from "axios";
 import Sidebar from "@/Components/Sidebar";
 import TokenTimer from "@/Components/TokenTimer";
 import Link from "next/link";
-import {PencilIcon} from "@heroicons/react/16/solid";
+import {PencilSquareIcon, DocumentTextIcon} from "@heroicons/react/16/solid";
 
 interface TermsItem {
     id: number;
     en: string;
 }
+
+const stripHtml = (s?: string) => (s ?? "").replace(/<[^>]*>?/gm, "").trim();
 
 const Terms = () => {
     const [terms, setTerms] = useState<TermsItem[]>([]);
@@ -49,49 +51,60 @@ const Terms = () => {
     }, [router]);
 
     if (error) {
-        return <div>{error}</div>;
+        return (
+            <div className="admin-page flex">
+                <Sidebar/>
+                <div className="ml-64 flex-1 p-8 lg:p-10 text-red-600">{error}</div>
+            </div>
+        );
     }
 
     return (
-        <div className="flex bg-gray-200">
+        <div className="admin-page flex">
             <Sidebar/>
-            <div className="flex-1 p-10 ml-62">
+            <div className="ml-64 flex-1 p-8 lg:p-10">
                 <TokenTimer/>
-                <div className="mt-8">
-                    <div className="w-full flex justify-between">
-                        <h2 className="text-2xl font-bold mb-4">Terms of Use</h2>
-                    </div>
-                    <table className="min-w-full bg-white border border-gray-200 rounded-lg">
-                        <thead>
-                        <tr>
-                            <th className="py-2 px-4 border-b-2 border-gray-200 text-left text-gray-600">Content</th>
-                            <th className="py-2 px-4 border-b-2 border-gray-200 text-left text-gray-600">View</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {terms.length === 0 ? (
-                            <tr>
-                                <td colSpan={2} className="text-center py-4">No data available</td>
-                            </tr>
-                        ) : (
-                            terms.map(item => (
-                                <tr key={item.id}>
-                                    <td className="py-4 px-4 border-b border-gray-200">
-                                        <div dangerouslySetInnerHTML={{__html: item.en}}/>
-                                    </td>
-                                    <td className="py-4 px-4 border-b border-gray-200">
-                                        <Link href={`/admin/terms/edit-terms/${item.id}`}
-                                              className="bg text-white py-2 px-8 rounded-md cursor-pointer flex w-32"><PencilIcon
-                                            color="#ffffff"/>
-                                            <div className="ml-2">Edit</div>
-                                        </Link>
-                                    </td>
-                                </tr>
-                            ))
-                        )}
-                        </tbody>
-                    </table>
+
+                <div className="mb-6">
+                    <h1 className="text-2xl font-bold text-gray-900">Terms of Use</h1>
+                    <p className="mt-1 text-sm text-gray-500">The terms of use shown on the website.</p>
                 </div>
+
+                {terms.length === 0 ? (
+                    <div className="admin-card flex flex-col items-center justify-center px-4 py-16 text-center">
+                        <DocumentTextIcon className="mb-2 size-10 text-gray-300" />
+                        <p className="text-sm text-gray-400">No content yet.</p>
+                    </div>
+                ) : (
+                    <div className="space-y-5">
+                        {terms.map((item) => (
+                            <div key={item.id} className="admin-card p-6">
+                                <div className="mb-4 flex items-start justify-between gap-4">
+                                    <div className="flex items-center gap-2.5">
+                                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[#1268B3]/10 text-[#1268B3]">
+                                            <DocumentTextIcon className="size-5" />
+                                        </div>
+                                        <div>
+                                            <p className="font-semibold text-gray-900">Terms of Use</p>
+                                            <p className="font-mono text-xs text-gray-400">#{item.id}</p>
+                                        </div>
+                                    </div>
+                                    <Link
+                                        href={`/admin/terms/edit-terms/${item.id}`}
+                                        className="admin-btn whitespace-nowrap"
+                                    >
+                                        <PencilSquareIcon className="size-4" /> Edit
+                                    </Link>
+                                </div>
+                                <div className="rounded-lg border border-gray-100 bg-gray-50 p-4">
+                                    <p className="line-clamp-6 text-sm leading-relaxed text-gray-600">
+                                        {stripHtml(item.en)}
+                                    </p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                )}
             </div>
         </div>
     )

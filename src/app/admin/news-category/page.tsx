@@ -5,12 +5,14 @@ import axios, { AxiosError } from "axios";
 import Sidebar from "@/Components/Sidebar";
 import TokenTimer from "@/Components/TokenTimer";
 import Link from "next/link";
-import { EyeIcon, PlusCircleIcon } from "@heroicons/react/16/solid";
+import { EyeIcon, PencilSquareIcon, PlusIcon, TagIcon } from "@heroicons/react/16/solid";
 
 type NewsItem = {
     id: string;
     cat_en: string;
 };
+
+const stripHtml = (s?: string) => (s ?? "").replace(/<[^>]*>?/gm, "").trim();
 
 const NewsCategory = () => {
     const [news, setNews] = useState<NewsItem[]>([]);
@@ -48,54 +50,85 @@ const NewsCategory = () => {
     }, [router]);
 
     if (error) {
-        return <div>{error}</div>;
+        return (
+            <div className="admin-page flex">
+                <Sidebar />
+                <div className="ml-64 flex-1 p-8 lg:p-10 text-red-600">{error}</div>
+            </div>
+        );
     }
 
     return (
-        <div className="flex bg-gray-200">
+        <div className="admin-page flex">
             <Sidebar />
-            <div className="flex-1 p-10 ml-62">
+            <div className="ml-64 flex-1 p-8 lg:p-10">
                 <TokenTimer />
-                <div className="mt-8">
-                    <div className="w-full flex justify-between">
-                        <h2 className="text-2xl font-bold mb-4">News category</h2>
-                        <Link href="/admin/news-category/add-news-category"
-                              className="bg text-white h-fit py-2 px-8 rounded-md cursor-pointer flex items-center">
-                            <PlusCircleIcon className="size-6" color="#ffffff" />
-                            <div className="ml-2">Add</div>
-                        </Link>
+
+                <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                        <h1 className="text-2xl font-bold text-gray-900">News Categories</h1>
+                        <p className="mt-1 text-sm text-gray-500">
+                            {news.length} categor{news.length === 1 ? "y" : "ies"}
+                        </p>
                     </div>
-                    <table className="min-w-full bg-white border border-gray-200 rounded-lg">
-                        <thead>
-                        <tr>
-                            <th className="py-2 px-4 border-b-2 border-gray-200 text-left text-gray-600">English</th>
-                            <th className="py-2 px-4 border-b-2 border-gray-200 text-left text-gray-600">View</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {news.length === 0 ? (
-                            <tr>
-                                <td colSpan={2} className="text-center py-4">No categories available</td>
-                            </tr>
-                        ) : (
-                            news.map((newsItem) => (
-                                <tr key={newsItem.id}>
-                                    <td className="py-4 px-4 border-b border-gray-200">
-                                        <div dangerouslySetInnerHTML={{ __html: newsItem.cat_en }} />
-                                    </td>
-                                    <td className="py-4 px-4 border-b border-gray-200">
-                                        <Link href={`/admin/news-category/view-news-category/${newsItem.id}`}
-                                              className="bg text-white py-2 px-8 rounded-md cursor-pointer flex w-32">
-                                            <EyeIcon color="#ffffff" />
-                                            <div className="ml-2">View</div>
-                                        </Link>
-                                    </td>
-                                </tr>
-                            ))
-                        )}
-                        </tbody>
-                    </table>
+                    <Link href="/admin/news-category/add-news-category" className="admin-btn whitespace-nowrap">
+                        <PlusIcon className="size-5" /> Add
+                    </Link>
                 </div>
+
+                {news.length === 0 ? (
+                    <div className="admin-card flex flex-col items-center justify-center px-4 py-16 text-center">
+                        <TagIcon className="mb-2 size-10 text-gray-300" />
+                        <p className="text-sm text-gray-400">No categories yet.</p>
+                    </div>
+                ) : (
+                    <div className="admin-card overflow-hidden">
+                        <div className="overflow-x-auto">
+                            <table className="min-w-full text-sm">
+                                <thead>
+                                <tr className="border-b border-gray-200 bg-gray-50 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">
+                                    <th className="px-5 py-3 w-12">#</th>
+                                    <th className="px-5 py-3">Category</th>
+                                    <th className="px-5 py-3 text-right">Actions</th>
+                                </tr>
+                                </thead>
+                                <tbody className="divide-y divide-gray-100">
+                                {news.map((newsItem) => (
+                                    <tr key={newsItem.id} className="transition-colors hover:bg-gray-50">
+                                        <td className="px-5 py-3">
+                                            <span className="font-mono text-xs font-medium text-gray-400">#{newsItem.id}</span>
+                                        </td>
+                                        <td className="px-5 py-3">
+                                            <span className="inline-flex items-center gap-2 font-medium text-gray-800">
+                                                <TagIcon className="size-4 text-gray-400" />
+                                                {stripHtml(newsItem.cat_en)}
+                                            </span>
+                                        </td>
+                                        <td className="px-5 py-3">
+                                            <div className="flex items-center justify-end gap-2">
+                                                <Link
+                                                    href={`/admin/news-category/view-news-category/${newsItem.id}`}
+                                                    className="admin-btn-ghost"
+                                                    title="View"
+                                                >
+                                                    <EyeIcon className="size-4" />
+                                                </Link>
+                                                <Link
+                                                    href={`/admin/news-category/edit-news-category/${newsItem.id}`}
+                                                    className="admin-btn-ghost"
+                                                    title="Edit"
+                                                >
+                                                    <PencilSquareIcon className="size-4" />
+                                                </Link>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );

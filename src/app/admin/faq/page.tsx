@@ -5,12 +5,14 @@ import axios from "axios";
 import Sidebar from "@/Components/Sidebar";
 import TokenTimer from "@/Components/TokenTimer";
 import Link from "next/link";
-import { EyeIcon, PlusCircleIcon } from "@heroicons/react/16/solid";
+import { EyeIcon, PencilSquareIcon, PlusIcon, QuestionMarkCircleIcon } from "@heroicons/react/16/solid";
 
 type FaqItem = {
     id: number;
     en: string;
 };
+
+const stripHtml = (s?: string) => (s ?? "").replace(/<[^>]*>?/gm, "").trim();
 
 const Faq = () => {
     const [faq, setFaq] = useState<FaqItem[]>([]);
@@ -49,57 +51,84 @@ const Faq = () => {
     }, [router]);
 
     if (error) {
-        return <div className="p-10 text-red-600">{error}</div>;
+        return (
+            <div className="admin-page flex">
+                <Sidebar />
+                <div className="ml-64 flex-1 p-8 lg:p-10 text-red-600">{error}</div>
+            </div>
+        );
     }
 
     return (
-        <div className="flex bg-gray-200 min-h-screen">
+        <div className="admin-page flex">
             <Sidebar />
-            <div className="flex-1 p-10 ml-62">
+            <div className="ml-64 flex-1 p-8 lg:p-10">
                 <TokenTimer />
-                <div className="mt-8">
-                    <div className="w-full flex justify-between items-center">
-                        <h2 className="text-2xl font-bold mb-4">FAQ</h2>
-                        <Link
-                            href="/admin/faq/add-faq"
-                            className="bg text-white py-2 px-6 rounded-md flex items-center hover:bg-blue-700 transition"
-                        >
-                            <PlusCircleIcon className="size-5 mr-2" />
-                            Add
-                        </Link>
-                    </div>
 
-                    {faq.length === 0 ? (
-                        <p className="mt-4 text-gray-600">FAQ не найдено.</p>
-                    ) : (
-                        <table className="min-w-full bg-white border border-gray-200 rounded-lg mt-4">
-                            <thead>
-                            <tr>
-                                <th className="py-2 px-4 border-b-2 border-gray-200 text-left text-gray-600">Question</th>
-                                <th className="py-2 px-4 border-b-2 border-gray-200 text-left text-gray-600">View</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {faq.map((item) => (
-                                <tr key={item.id}>
-                                    <td className="py-4 px-4 border-b border-gray-200">
-                                        <div dangerouslySetInnerHTML={{ __html: item.en }} />
-                                    </td>
-                                    <td className="py-4 px-4 border-b border-gray-200">
-                                        <Link
-                                            href={`/admin/faq/view-faq/${item.id}`}
-                                            className="bg text-white py-2 px-4 rounded-md flex items-center justify-center hover:bg-blue-700 transition w-fit"
-                                        >
-                                            <EyeIcon className="size-5 mr-2" />
-                                            View
-                                        </Link>
-                                    </td>
-                                </tr>
-                            ))}
-                            </tbody>
-                        </table>
-                    )}
+                <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                        <h1 className="text-2xl font-bold text-gray-900">FAQ</h1>
+                        <p className="mt-1 text-sm text-gray-500">
+                            {faq.length} question{faq.length === 1 ? "" : "s"}
+                        </p>
+                    </div>
+                    <Link href="/admin/faq/add-faq" className="admin-btn whitespace-nowrap">
+                        <PlusIcon className="size-5" /> Add
+                    </Link>
                 </div>
+
+                {faq.length === 0 ? (
+                    <div className="admin-card flex flex-col items-center justify-center px-4 py-16 text-center">
+                        <QuestionMarkCircleIcon className="mb-2 size-10 text-gray-300" />
+                        <p className="text-sm text-gray-400">No FAQ items yet.</p>
+                    </div>
+                ) : (
+                    <div className="admin-card overflow-hidden">
+                        <div className="overflow-x-auto">
+                            <table className="min-w-full text-sm">
+                                <thead>
+                                <tr className="border-b border-gray-200 bg-gray-50 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">
+                                    <th className="px-5 py-3 w-12">#</th>
+                                    <th className="px-5 py-3">Question</th>
+                                    <th className="px-5 py-3 text-right">Actions</th>
+                                </tr>
+                                </thead>
+                                <tbody className="divide-y divide-gray-100">
+                                {faq.map((item) => (
+                                    <tr key={item.id} className="transition-colors hover:bg-gray-50">
+                                        <td className="px-5 py-3">
+                                            <span className="font-mono text-xs font-medium text-gray-400">#{item.id}</span>
+                                        </td>
+                                        <td className="px-5 py-3">
+                                            <p className="line-clamp-2 max-w-2xl font-medium text-gray-800">
+                                                {stripHtml(item.en)}
+                                            </p>
+                                        </td>
+                                        <td className="px-5 py-3">
+                                            <div className="flex items-center justify-end gap-2">
+                                                <Link
+                                                    href={`/admin/faq/view-faq/${item.id}`}
+                                                    className="admin-btn-ghost"
+                                                    title="View"
+                                                >
+                                                    <EyeIcon className="size-4" />
+                                                </Link>
+                                                <Link
+                                                    href={`/admin/faq/edit-faq/${item.id}`}
+                                                    className="admin-btn-ghost"
+                                                    title="Edit"
+                                                >
+                                                    <PencilSquareIcon className="size-4" />
+                                                </Link>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );

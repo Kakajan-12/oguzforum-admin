@@ -5,12 +5,14 @@ import axios, { AxiosError } from "axios";
 import Sidebar from "@/Components/Sidebar";
 import TokenTimer from "@/Components/TokenTimer";
 import Link from "next/link";
-import { EyeIcon, PlusCircleIcon } from "@heroicons/react/16/solid";
+import { EyeIcon, PencilSquareIcon, PlusIcon, MapPinIcon } from "@heroicons/react/16/solid";
 
 type Location = {
     id: number;
     location_en: string;
 };
+
+const stripHtml = (s?: string) => (s ?? "").replace(/<[^>]*>?/gm, "").trim();
 
 const Locations = () => {
     const [locations, setLocations] = useState<Location[]>([]);
@@ -51,58 +53,85 @@ const Locations = () => {
     }, [router]);
 
     if (error) {
-        return <div className="p-4 text-red-500">{error}</div>;
+        return (
+            <div className="admin-page flex">
+                <Sidebar />
+                <div className="ml-64 flex-1 p-8 lg:p-10 text-red-600">{error}</div>
+            </div>
+        );
     }
 
     return (
-        <div className="flex bg-gray-200 min-h-screen">
+        <div className="admin-page flex">
             <Sidebar />
-            <div className="flex-1 p-10 ml-62">
+            <div className="ml-64 flex-1 p-8 lg:p-10">
                 <TokenTimer />
-                <div className="mt-8">
-                    <div className="w-full flex justify-between items-center">
-                        <h2 className="text-2xl font-bold mb-4">Project Locations</h2>
-                        <Link
-                            href="/admin/locations/add-location"
-                            className="bg text-white h-fit py-2 px-6 rounded-md cursor-pointer flex items-center hover:bg-blue-700"
-                        >
-                            <PlusCircleIcon className="w-5 h-5 mr-2" />
-                            Add
-                        </Link>
+
+                <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                        <h1 className="text-2xl font-bold text-gray-900">Project Locations</h1>
+                        <p className="mt-1 text-sm text-gray-500">
+                            {locations.length} location{locations.length === 1 ? "" : "s"}
+                        </p>
                     </div>
-                    <table className="min-w-full bg-white border border-gray-200 rounded-lg">
-                        <thead>
-                        <tr>
-                            <th className="py-2 px-4 border-b-2 border-gray-200 text-left text-gray-600">English</th>
-                            <th className="py-2 px-4 border-b-2 border-gray-200 text-left text-gray-600">View</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {locations.length === 0 ? (
-                            <tr>
-                                <td colSpan={2} className="text-center py-4">No locations available</td>
-                            </tr>
-                        ) : (
-                            locations.map((location) => (
-                                <tr key={location.id}>
-                                    <td className="py-4 px-4 border-b border-gray-200">
-                                        <div dangerouslySetInnerHTML={{ __html: location.location_en }} />
-                                    </td>
-                                    <td className="py-4 px-4 border-b border-gray-200">
-                                        <Link
-                                            href={`/admin/locations/view-location/${location.id}`}
-                                            className="bg text-white py-2 px-6 rounded-md flex items-center hover:bg-blue-700 w-fit"
-                                        >
-                                            <EyeIcon className="w-5 h-5 mr-2" />
-                                            View
-                                        </Link>
-                                    </td>
-                                </tr>
-                            ))
-                        )}
-                        </tbody>
-                    </table>
+                    <Link href="/admin/locations/add-location" className="admin-btn whitespace-nowrap">
+                        <PlusIcon className="size-5" /> Add
+                    </Link>
                 </div>
+
+                {locations.length === 0 ? (
+                    <div className="admin-card flex flex-col items-center justify-center px-4 py-16 text-center">
+                        <MapPinIcon className="mb-2 size-10 text-gray-300" />
+                        <p className="text-sm text-gray-400">No locations yet.</p>
+                    </div>
+                ) : (
+                    <div className="admin-card overflow-hidden">
+                        <div className="overflow-x-auto">
+                            <table className="min-w-full text-sm">
+                                <thead>
+                                <tr className="border-b border-gray-200 bg-gray-50 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">
+                                    <th className="px-5 py-3 w-12">#</th>
+                                    <th className="px-5 py-3">Location</th>
+                                    <th className="px-5 py-3 text-right">Actions</th>
+                                </tr>
+                                </thead>
+                                <tbody className="divide-y divide-gray-100">
+                                {locations.map((location) => (
+                                    <tr key={location.id} className="transition-colors hover:bg-gray-50">
+                                        <td className="px-5 py-3">
+                                            <span className="font-mono text-xs font-medium text-gray-400">#{location.id}</span>
+                                        </td>
+                                        <td className="px-5 py-3">
+                                            <span className="inline-flex items-center gap-2 font-medium text-gray-800">
+                                                <MapPinIcon className="size-4 text-gray-400" />
+                                                {stripHtml(location.location_en)}
+                                            </span>
+                                        </td>
+                                        <td className="px-5 py-3">
+                                            <div className="flex items-center justify-end gap-2">
+                                                <Link
+                                                    href={`/admin/locations/view-location/${location.id}`}
+                                                    className="admin-btn-ghost"
+                                                    title="View"
+                                                >
+                                                    <EyeIcon className="size-4" />
+                                                </Link>
+                                                <Link
+                                                    href={`/admin/locations/edit-location/${location.id}`}
+                                                    className="admin-btn-ghost"
+                                                    title="Edit"
+                                                >
+                                                    <PencilSquareIcon className="size-4" />
+                                                </Link>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );
