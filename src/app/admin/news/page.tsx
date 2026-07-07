@@ -63,9 +63,12 @@ const News = () => {
     };
 
     const filtered = useMemo(() => {
-        if (!search.trim()) return news;
-        const q = search.toLowerCase();
-        return news.filter((n) => stripHtml(n.en).toLowerCase().includes(q));
+        const q = search.trim().toLowerCase();
+        const base = q
+            ? news.filter((n) => stripHtml(n.en).toLowerCase().includes(q))
+            : news;
+        // Newest first — highest (most recently added) id on top.
+        return [...base].sort((a, b) => b.id - a.id);
     }, [news, search]);
 
     if (error) return <div className="admin-page flex"><Sidebar/><div className="ml-64 flex-1 p-10 text-red-600">{error}</div></div>;

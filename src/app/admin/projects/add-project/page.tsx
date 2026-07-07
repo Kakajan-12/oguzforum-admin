@@ -211,14 +211,13 @@ const AddProject = () => {
                                 </div>
                                 <div className="w-1/3">
                                     <label htmlFor="logo" className="block text-gray-700 font-semibold mb-2">
-                                        Logo:
+                                        Logo <span className="font-normal text-gray-400">(optional)</span>:
                                     </label>
                                     <input
                                         type="file"
                                         id="logo"
                                         accept="image/*"
                                         onChange={(e) => setLogo(e.target.files?.[0] || null)}
-                                        required
                                         className="border border-gray-300 rounded p-2 w-full"
                                     />
                                 </div>

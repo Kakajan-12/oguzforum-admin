@@ -1,11 +1,11 @@
 'use client';
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import axios, { AxiosError } from "axios";
 import Sidebar from "@/Components/Sidebar";
 import TokenTimer from "@/Components/TokenTimer";
 import Link from "next/link";
-import { EyeIcon, PlusCircleIcon } from "@heroicons/react/16/solid";
+import { EyeIcon, PencilSquareIcon, PlusIcon, PhotoIcon } from "@heroicons/react/16/solid";
 import Image from "next/image";
 
 interface Project {
@@ -15,6 +15,10 @@ interface Project {
     en: string;
     text_en: string;
 }
+
+const stripHtml = (s?: string) => (s ?? "").replace(/<[^>]*>?/gm, "").trim();
+const mediaUrl = (p?: string) =>
+    p ? `${process.env.NEXT_PUBLIC_API_URL}/${p.replace(/\\/g, "/")}` : "";
 
 const Projects = () => {
     const [projects, setProjects] = useState<Project[]>([]);
@@ -51,77 +55,125 @@ const Projects = () => {
         fetchProjects();
     }, [router]);
 
+    // Newest first — highest (most recently added) id on top.
+    const sorted = useMemo(
+        () => [...projects].sort((a, b) => b.id - a.id),
+        [projects]
+    );
+
     if (error) {
-        return <div>{error}</div>;
+        return (
+            <div className="admin-page flex">
+                <Sidebar />
+                <div className="ml-64 flex-1 p-8 lg:p-10 text-red-600">{error}</div>
+            </div>
+        );
     }
 
     return (
-        <div className="flex bg-gray-200">
+        <div className="admin-page flex">
             <Sidebar />
-            <div className="flex-1 p-10 ml-62">
+            <div className="ml-64 flex-1 p-8 lg:p-10">
                 <TokenTimer />
-                <div className="mt-8">
-                    <div className="w-full flex justify-between">
-                        <h2 className="text-2xl font-bold mb-4">Projects</h2>
-                        <Link
-                            href="/admin/projects/add-project"
-                            className="bg text-white h-fit py-2 px-8 rounded-md cursor-pointer flex items-center"
-                        >
-                            <PlusCircleIcon className="size-6" color="#ffffff" />
-                            <div className="ml-2">Add</div>
-                        </Link>
-                    </div>
 
-                    <table className="min-w-full bg-white border border-gray-200 rounded-lg">
-                        <thead>
-                        <tr>
-                            <th className="py-2 px-4 border-b-2 border-gray-200 text-left text-gray-600">Image</th>
-                            <th className="py-2 px-4 border-b-2 border-gray-200 text-left text-gray-600">Logo</th>
-                            <th className="py-2 px-4 border-b-2 border-gray-200 text-left text-gray-600">Title</th>
-                            <th className="py-2 px-4 border-b-2 border-gray-200 text-left text-gray-600">View</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {projects.length === 0 ? (
-                            <tr>
-                                <td colSpan={4} className="text-center py-4">No projects available</td>
+                <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                        <h1 className="text-2xl font-bold text-gray-900">Projects</h1>
+                        <p className="mt-1 text-sm text-gray-500">
+                            {sorted.length} project{sorted.length === 1 ? "" : "s"}
+                        </p>
+                    </div>
+                    <Link href="/admin/projects/add-project" className="admin-btn whitespace-nowrap">
+                        <PlusIcon className="size-5" /> Add
+                    </Link>
+                </div>
+
+                <div className="admin-card overflow-hidden">
+                    <div className="overflow-x-auto">
+                        <table className="min-w-full text-sm">
+                            <thead>
+                            <tr className="border-b border-gray-200 bg-gray-50 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">
+                                <th className="px-5 py-3">ID</th>
+                                <th className="px-5 py-3">Image</th>
+                                <th className="px-5 py-3">Logo</th>
+                                <th className="px-5 py-3">Title</th>
+                                <th className="px-5 py-3 text-right">Actions</th>
                             </tr>
-                        ) : (
-                            projects.map((project) => (
-                                <tr key={project.id}>
-                                    <td className="py-4 px-4 border-b border-gray-200">
-                                        <Image
-                                            src={`${process.env.NEXT_PUBLIC_API_URL}/${project.image}`}
-                                            alt={`Project ${project.id}`}
-                                            width={100}
-                                            height={100}
-                                        />
-                                    </td>
-                                    <td className="py-4 px-4 border-b border-gray-200">
-                                        <Image
-                                            src={`${process.env.NEXT_PUBLIC_API_URL}/${project.logo}`}
-                                            alt={`Project ${project.id}`}
-                                            width={100}
-                                            height={100}
-                                        />
-                                    </td>
-                                    <td className="py-4 px-4 border-b border-gray-200">
-                                        <div dangerouslySetInnerHTML={{ __html: project.en }} />
-                                    </td>
-                                    <td className="py-4 px-4 border-b border-gray-200">
-                                        <Link
-                                            href={`/admin/projects/view-project/${project.id}`}
-                                            className="bg text-white py-2 px-8 rounded-md cursor-pointer flex w-32"
-                                        >
-                                            <EyeIcon color="#ffffff" />
-                                            <div className="ml-2">View</div>
-                                        </Link>
+                            </thead>
+                            <tbody className="divide-y divide-gray-100">
+                            {sorted.length === 0 ? (
+                                <tr>
+                                    <td colSpan={5} className="px-5 py-10 text-center text-gray-400">
+                                        No projects available
                                     </td>
                                 </tr>
-                            ))
-                        )}
-                        </tbody>
-                    </table>
+                            ) : (
+                                sorted.map((project) => (
+                                    <tr key={project.id} className="transition-colors hover:bg-gray-50">
+                                        <td className="px-5 py-3">
+                                            <span className="font-mono text-xs font-medium text-gray-500">#{project.id}</span>
+                                        </td>
+                                        <td className="px-5 py-3">
+                                            {project.image ? (
+                                                <Image
+                                                    src={mediaUrl(project.image)}
+                                                    alt={`Project ${project.id}`}
+                                                    width={72}
+                                                    height={48}
+                                                    className="h-12 w-[72px] rounded-md border border-gray-200 object-cover"
+                                                />
+                                            ) : (
+                                                <div className="flex h-12 w-[72px] flex-col items-center justify-center rounded-md border border-dashed border-gray-300 bg-gray-50 text-[10px] font-medium text-gray-400">
+                                                    <PhotoIcon className="size-4" />
+                                                    No image
+                                                </div>
+                                            )}
+                                        </td>
+                                        <td className="px-5 py-3">
+                                            {project.logo ? (
+                                                <Image
+                                                    src={mediaUrl(project.logo)}
+                                                    alt={`Logo ${project.id}`}
+                                                    width={48}
+                                                    height={48}
+                                                    className="h-12 w-12 rounded-md border border-gray-200 bg-white object-contain p-1"
+                                                />
+                                            ) : (
+                                                <div className="flex h-12 w-12 flex-col items-center justify-center rounded-md border border-dashed border-gray-300 bg-gray-50 text-[9px] font-medium text-gray-400">
+                                                    <PhotoIcon className="size-4" />
+                                                    No logo
+                                                </div>
+                                            )}
+                                        </td>
+                                        <td className="px-5 py-3">
+                                            <p className="line-clamp-2 max-w-xl font-medium text-gray-800">
+                                                {stripHtml(project.en)}
+                                            </p>
+                                        </td>
+                                        <td className="px-5 py-3">
+                                            <div className="flex items-center justify-end gap-2">
+                                                <Link
+                                                    href={`/admin/projects/view-project/${project.id}`}
+                                                    className="admin-btn-ghost"
+                                                    title="View"
+                                                >
+                                                    <EyeIcon className="size-4" />
+                                                </Link>
+                                                <Link
+                                                    href={`/admin/projects/edit-project/${project.id}`}
+                                                    className="admin-btn-ghost"
+                                                    title="Edit"
+                                                >
+                                                    <PencilSquareIcon className="size-4" />
+                                                </Link>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))
+                            )}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>

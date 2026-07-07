@@ -6,8 +6,15 @@ import TipTap from '@/Components/TipTapEditor';
 import GalleryPicker from '@/Components/GalleryPicker';
 import Sidebar from "@/Components/Sidebar";
 import TokenTimer from "@/Components/TokenTimer";
-import {DocumentIcon} from "@heroicons/react/16/solid";
+import {
+    DocumentIcon,
+    PlusIcon,
+    TrashIcon,
+    ArrowLeftIcon,
+    PhotoIcon,
+} from "@heroicons/react/16/solid";
 import Image from "next/image";
+import Link from "next/link";
 
 interface Organizer {
     id?: number;
@@ -47,9 +54,11 @@ const EditProject = () => {
     const [imagePath, setImagePath] = useState('');
     const [logoFile, setLogoFile] = useState<File | null>(null);
     const [logoPath, setLogoPath] = useState('');
+    const [logoRemoved, setLogoRemoved] = useState(false);
     const [galleryImages, setGalleryImages] = useState<{ id: number; image: string }[]>([]);
     const [newGallery, setNewGallery] = useState<File[]>([]);
     const [loading, setLoading] = useState(true);
+    const [saving, setSaving] = useState(false);
     const [error, setError] = useState('');
     const [locations, setLocations] = useState<{
         id: number,
@@ -180,8 +189,19 @@ const EditProject = () => {
         setData((prev) => ({ ...prev, [name]: content }));
     };
 
+    // Clear the logo entirely: drop any pending file, hide the preview and send
+    // an empty `logo` on save so the backend sets the column to NULL.
+    const removeLogo = () => {
+        setLogoFile(null);
+        setLogoPath('');
+        setLogoRemoved(true);
+        setData((prev) => ({ ...prev, logo: '' }));
+    };
+
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        setSaving(true);
+        setError('');
         try {
             const token = localStorage.getItem('auth_token');
             const formData = new FormData();
@@ -249,6 +269,7 @@ const EditProject = () => {
         } catch (err) {
             console.error(err);
             setError("Ошибка при сохранении");
+            setSaving(false);
         }
     };
 
@@ -265,69 +286,142 @@ const EditProject = () => {
         }
     };
 
-    if (loading) return <p>Загрузка...</p>;
-    if (error) return <p>{error}</p>;
+    if (loading) return (
+        <div className="admin-page flex">
+            <Sidebar/>
+            <div className="ml-64 flex-1 p-8 lg:p-10 text-gray-500">Загрузка...</div>
+        </div>
+    );
+    if (error && !saving) return (
+        <div className="admin-page flex">
+            <Sidebar/>
+            <div className="ml-64 flex-1 p-8 lg:p-10 text-red-600">{error}</div>
+        </div>
+    );
+
+    const activeOrganizers = organizers.filter(o => !o._deleted).length;
+    const activeParticipants = participants.filter(p => !p._deleted).length;
 
     return (
-        <div className="flex bg-gray-200 min-h-screen">
+        <div className="admin-page flex">
             <Sidebar/>
-            <div className="flex-1 p-10 ml-62">
+            <div className="ml-64 flex-1 p-8 lg:p-10">
                 <TokenTimer/>
-                <div className="mt-8">
-                    <h1 className="text-2xl font-bold mb-4">Edit Project</h1>
-                    <form onSubmit={handleSubmit} className="space-y-6 bg-white p-6 rounded shadow">
-                        {imagePath && (
-                            <div>
-                                <label className="block font-semibold mb-2">Current image:</label>
-                                <Image
-                                    src={`${process.env.NEXT_PUBLIC_API_URL}/${imagePath.replace(/\\/g, '/')}`}
-                                    alt="Project"
-                                    width={200}
-                                    height={200}
-                                    className="w-64 rounded"
-                                />
-                            </div>
-                        )}
-                        {logoPath && (
-                            <div className="mt-4">
-                                <label className="block font-semibold mb-2">Current logo:</label>
-                                <Image
-                                    src={`${process.env.NEXT_PUBLIC_API_URL}/${logoPath.replace(/\\/g, '/')}`}
-                                    alt="Logo"
-                                    width={100}
-                                    height={100}
-                                    className="rounded"
-                                />
-                            </div>
-                        )}
 
-                        <div className="flex space-x-2">
-                            <div className="w-1/2">
-                                <label className="block font-semibold mb-2">New logo:</label>
-                                <input
-                                    type="file"
-                                    accept="image/*"
-                                    onChange={(e) => e.target.files && setLogoFile(e.target.files[0])}
-                                    className="border rounded p-2 w-full"
-                                />
-                            </div>
-                            <div className="w-1/2">
-                                <label className="block font-semibold mb-2">New image:</label>
+                {/* Header */}
+                <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                        <Link
+                            href={`/admin/projects/view-project/${id}`}
+                            className="mb-2 inline-flex items-center gap-1.5 text-sm font-medium text-gray-500 transition-colors hover:text-[#1268B3]"
+                        >
+                            <ArrowLeftIcon className="size-4"/> Back to project
+                        </Link>
+                        <h1 className="text-2xl font-bold text-gray-900">Edit Project</h1>
+                        <p className="mt-1 text-sm text-gray-500">Update event details, media and participants.</p>
+                    </div>
+                    <button
+                        type="submit"
+                        form="edit-project-form"
+                        disabled={saving}
+                        className="admin-btn whitespace-nowrap disabled:cursor-not-allowed disabled:opacity-60"
+                    >
+                        <DocumentIcon className="size-5"/>
+                        {saving ? "Saving..." : "Save changes"}
+                    </button>
+                </div>
+
+                {error && (
+                    <div className="mb-6 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
+                        {error}
+                    </div>
+                )}
+
+                <form id="edit-project-form" onSubmit={handleSubmit} className="space-y-6">
+                    {/* Media */}
+                    <section className="admin-card p-6">
+                        <h2 className="mb-1 text-lg font-semibold text-gray-900">Media</h2>
+                        <p className="mb-5 text-sm text-gray-500">Cover image and logo for this project.</p>
+
+                        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                            <div>
+                                <span className="admin-label">Cover image</span>
+                                {imagePath ? (
+                                    <Image
+                                        src={`${process.env.NEXT_PUBLIC_API_URL}/${imagePath.replace(/\\/g, '/')}`}
+                                        alt="Project"
+                                        width={320}
+                                        height={200}
+                                        className="mb-3 h-40 w-full max-w-xs rounded-lg border border-gray-200 object-cover"
+                                    />
+                                ) : (
+                                    <div className="mb-3 flex h-40 w-full max-w-xs items-center justify-center rounded-lg border border-dashed border-gray-300 bg-gray-50 text-gray-300">
+                                        <PhotoIcon className="size-10"/>
+                                    </div>
+                                )}
                                 <input
                                     type="file"
                                     accept="image/*"
                                     onChange={(e) => e.target.files && setImageFile(e.target.files[0])}
-                                    className="border rounded p-2 w-full"
+                                    className="admin-input file:mr-3 file:rounded-md file:border-0 file:bg-[#1268B3]/10 file:px-3 file:py-1 file:text-sm file:font-medium file:text-[#1268B3]"
                                 />
+                                {imageFile && <p className="mt-1 text-xs text-green-600">New image selected: {imageFile.name}</p>}
+                            </div>
+
+                            <div>
+                                <span className="admin-label">Logo</span>
+                                {logoPath ? (
+                                    <div className="group relative mb-3 h-24 w-24">
+                                        <Image
+                                            src={`${process.env.NEXT_PUBLIC_API_URL}/${logoPath.replace(/\\/g, '/')}`}
+                                            alt="Logo"
+                                            width={120}
+                                            height={120}
+                                            className="h-24 w-24 rounded-lg border border-gray-200 object-contain bg-white p-1"
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={removeLogo}
+                                            className="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full bg-red-600 text-sm text-white shadow-sm transition-colors hover:bg-red-700"
+                                            aria-label="Remove logo"
+                                            title="Remove logo"
+                                        >
+                                            ×
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <div className="mb-3 flex h-24 w-24 items-center justify-center rounded-lg border border-dashed border-gray-300 bg-gray-50 text-gray-300">
+                                        <PhotoIcon className="size-8"/>
+                                    </div>
+                                )}
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={(e) => {
+                                        if (e.target.files && e.target.files[0]) {
+                                            setLogoFile(e.target.files[0]);
+                                            setLogoRemoved(false);
+                                        }
+                                    }}
+                                    className="admin-input file:mr-3 file:rounded-md file:border-0 file:bg-[#1268B3]/10 file:px-3 file:py-1 file:text-sm file:font-medium file:text-[#1268B3]"
+                                />
+                                {logoFile ? (
+                                    <p className="mt-1 text-xs text-green-600">New logo selected: {logoFile.name}</p>
+                                ) : logoRemoved && (
+                                    <p className="mt-1 text-xs text-amber-600">Logo will be removed on save.</p>
+                                )}
                             </div>
                         </div>
+                    </section>
 
+                    {/* Details */}
+                    <section className="admin-card p-6">
+                        <h2 className="mb-1 text-lg font-semibold text-gray-900">Event details</h2>
+                        <p className="mb-5 text-sm text-gray-500">Schedule, location and category.</p>
 
-                        <div className="flex space-x-4">
-                            <div className="w-1/2">
-                                <label className="block text-gray-700 font-semibold mb-2">
-                                    Start date:
-                                </label>
+                        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                            <div>
+                                <label htmlFor="date" className="admin-label">Start date</label>
                                 <input
                                     type="date"
                                     id="date"
@@ -335,13 +429,11 @@ const EditProject = () => {
                                     value={data.date}
                                     onChange={(e) => setData((prev) => ({...prev, date: e.target.value}))}
                                     required
-                                    className="border border-gray-300 rounded p-2 w-full focus:border-blue-500 focus:ring focus:ring-blue-200 transition duration-150"
+                                    className="admin-input"
                                 />
                             </div>
-                            <div className="w-1/2">
-                                <label className="block text-gray-700 font-semibold mb-2">
-                                    End date:
-                                </label>
+                            <div>
+                                <label htmlFor="end_date" className="admin-label">End date</label>
                                 <input
                                     type="date"
                                     id="end_date"
@@ -349,11 +441,11 @@ const EditProject = () => {
                                     value={data.end_date}
                                     onChange={(e) => setData((prev) => ({...prev, end_date: e.target.value}))}
                                     required
-                                    className="border border-gray-300 rounded p-2 w-full focus:border-blue-500 focus:ring focus:ring-blue-200 transition duration-150"
+                                    className="admin-input"
                                 />
                             </div>
-                            <div className="w-1/2">
-                                <label className="block text-gray-700 font-semibold mb-2">Link</label>
+                            <div>
+                                <label htmlFor="link" className="admin-label">Link</label>
                                 <input
                                     type="text"
                                     id="link"
@@ -361,22 +453,20 @@ const EditProject = () => {
                                     value={data.link || ''}
                                     onChange={(e) => setData((prev) => ({...prev, link: e.target.value}))}
                                     required
-                                    className="border border-gray-300 rounded p-2 w-full focus:border-blue-500 focus:ring focus:ring-blue-200 transition duration-150"
+                                    className="admin-input"
                                 />
                             </div>
-                            <div className="w-full">
-                                <label className="block text-gray-700 font-semibold mb-2">
-                                    Location:
-                                </label>
+                            <div>
+                                <label htmlFor="location_id" className="admin-label">Location</label>
                                 <select
                                     id="location_id"
                                     name="location_id"
                                     value={String(data.location_id)}
                                     onChange={(e) => setData((prev) => ({...prev, location_id: e.target.value}))}
                                     required
-                                    className="border border-gray-300 rounded p-2 w-full focus:border-blue-500 focus:ring focus:ring-blue-200 transition duration-150"
+                                    className="admin-input"
                                 >
-                                    <option value="">Select category</option>
+                                    <option value="">Select location</option>
                                     {locations.map((loc) => (
                                         <option key={loc.id} value={String(loc.id)}>
                                             {loc.location_en}
@@ -384,17 +474,15 @@ const EditProject = () => {
                                     ))}
                                 </select>
                             </div>
-                            <div className="w-full">
-                                <label className="block text-gray-700 font-semibold mb-2">
-                                    Type:
-                                </label>
+                            <div>
+                                <label htmlFor="type_id" className="admin-label">Type</label>
                                 <select
                                     id="type_id"
                                     name="type_id"
                                     value={String(data.type_id)}
                                     onChange={(e) => setData((prev) => ({...prev, type_id: e.target.value}))}
                                     required
-                                    className="border border-gray-300 rounded p-2 w-full focus:border-blue-500 focus:ring focus:ring-blue-200 transition duration-150"
+                                    className="admin-input"
                                 >
                                     <option value="">Select type</option>
                                     {types.map((type) => (
@@ -405,9 +493,16 @@ const EditProject = () => {
                                 </select>
                             </div>
                         </div>
-                        <div className="flex space-x-2">
-                            <div className="w-1/2">
-                                <label className="block text-gray-700 font-semibold mb-2">Speakers</label>
+                    </section>
+
+                    {/* Statistics */}
+                    <section className="admin-card p-6">
+                        <h2 className="mb-1 text-lg font-semibold text-gray-900">Statistics</h2>
+                        <p className="mb-5 text-sm text-gray-500">Numbers shown on the event page.</p>
+
+                        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                            <div>
+                                <label htmlFor="speakers" className="admin-label">Speakers</label>
                                 <input
                                     type="text"
                                     id="speakers"
@@ -415,11 +510,11 @@ const EditProject = () => {
                                     value={data.speakers || ''}
                                     onChange={(e) => setData((prev) => ({...prev, speakers: e.target.value}))}
                                     required
-                                    className="border border-gray-300 rounded p-2 w-full focus:border-blue-500 focus:ring focus:ring-blue-200 transition duration-150"
+                                    className="admin-input"
                                 />
                             </div>
-                            <div className="w-1/2">
-                                <label className="block text-gray-700 font-semibold mb-2">Delegates</label>
+                            <div>
+                                <label htmlFor="delegates" className="admin-label">Delegates</label>
                                 <input
                                     type="text"
                                     id="delegates"
@@ -427,11 +522,11 @@ const EditProject = () => {
                                     value={data.delegates || ''}
                                     onChange={(e) => setData((prev) => ({...prev, delegates: e.target.value}))}
                                     required
-                                    className="border border-gray-300 rounded p-2 w-full focus:border-blue-500 focus:ring focus:ring-blue-200 transition duration-150"
+                                    className="admin-input"
                                 />
                             </div>
-                            <div className="w-1/2">
-                                <label className="block text-gray-700 font-semibold mb-2">Countries</label>
+                            <div>
+                                <label htmlFor="countries" className="admin-label">Countries</label>
                                 <input
                                     type="text"
                                     id="countries"
@@ -439,11 +534,11 @@ const EditProject = () => {
                                     value={data.countries || ''}
                                     onChange={(e) => setData((prev) => ({...prev, countries: e.target.value}))}
                                     required
-                                    className="border border-gray-300 rounded p-2 w-full focus:border-blue-500 focus:ring focus:ring-blue-200 transition duration-150"
+                                    className="admin-input"
                                 />
                             </div>
-                            <div className="w-1/2">
-                                <label className="block text-gray-700 font-semibold mb-2">Companies</label>
+                            <div>
+                                <label htmlFor="companies" className="admin-label">Companies</label>
                                 <input
                                     type="text"
                                     id="companies"
@@ -451,11 +546,11 @@ const EditProject = () => {
                                     value={data.companies || ''}
                                     onChange={(e) => setData((prev) => ({...prev, companies: e.target.value}))}
                                     required
-                                    className="border border-gray-300 rounded p-2 w-full focus:border-blue-500 focus:ring focus:ring-blue-200 transition duration-150"
+                                    className="admin-input"
                                 />
                             </div>
-                            <div className="w-1/2">
-                                <label className="block text-gray-700 font-semibold mb-2">Media</label>
+                            <div>
+                                <label htmlFor="media" className="admin-label">Media</label>
                                 <input
                                     type="text"
                                     id="media"
@@ -463,184 +558,233 @@ const EditProject = () => {
                                     value={data.media || ''}
                                     onChange={(e) => setData((prev) => ({...prev, media: e.target.value}))}
                                     required
-                                    className="border border-gray-300 rounded p-2 w-full focus:border-blue-500 focus:ring focus:ring-blue-200 transition duration-150"
+                                    className="admin-input"
                                 />
                             </div>
                         </div>
+                    </section>
 
-                        <div className="bg-base-100 border border-gray-200 rounded-md p-6">
-                            <div className="mb-4">
-                                <label className="block font-semibold mb-2">Title:</label>
+                    {/* Content */}
+                    <section className="admin-card p-6">
+                        <h2 className="mb-1 text-lg font-semibold text-gray-900">Content</h2>
+                        <p className="mb-5 text-sm text-gray-500">Title and description shown on the event page.</p>
+
+                        <div className="space-y-5">
+                            <div>
+                                <span className="admin-label">Title</span>
                                 <TipTap
                                     content={data.en || ''}
                                     onChange={(content) => handleEditorChange('en', content)}
                                 />
                             </div>
-
-                            <div className="mb-4">
-                                <label className="block font-semibold mb-2">Text:</label>
+                            <div>
+                                <span className="admin-label">Text</span>
                                 <TipTap
                                     content={data.text_en || ''}
                                     onChange={(content) => handleEditorChange('text_en', content)}
                                 />
                             </div>
                         </div>
+                    </section>
 
-                        <div className="mb-6">
-                            <h3 className="text-xl font-semibold mb-3">Organizers</h3>
-
-                            {organizers.map((org, index) => (
-                                !org._deleted && (
-                                    <div key={index} className="border rounded-lg p-4 mb-3 bg-gray-50">
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                            <input
-                                                type="text"
-                                                placeholder="Organizer"
-                                                value={org.organizer_en}
-                                                onChange={(e) => updateOrganizer(index, 'organizer_en', e.target.value)}
-                                                className="border border-gray-300 rounded p-2 w-full"
-                                            />
-                                            <input
-                                                type="file"
-                                                accept="image/*"
-                                                onChange={(e) =>
-                                                    updateOrganizer(index, 'organizer_logo', e.target.files?.[0] || null)
-                                                }
-                                                className="border border-gray-300 rounded p-2 w-full"
-                                            />
-                                        </div>
-
-                                        {typeof org.organizer_logo === 'string' && org.organizer_logo && (
-                                            <div className="mt-2">
-                                                <Image
-                                                    src={`${process.env.NEXT_PUBLIC_API_URL}/${org.organizer_logo.replace(/\\/g, '/')}`}
-                                                    alt="org logo"
-                                                    width={100}
-                                                    height={100}
-                                                    className="rounded"
-                                                />
-                                            </div>
-                                        )}
-
-                                        <button
-                                            type="button"
-                                            onClick={() => removeOrganizer(index)}
-                                            className="text-red-600 text-sm mt-2"
-                                        >
-                                            Remove
-                                        </button>
-                                    </div>
-                                )
-                            ))}
-
-                            <button
-                                type="button"
-                                onClick={addOrganizer}
-                                className="bg-blue-600 text-white px-3 py-1 rounded"
-                            >
-                                + Add organizer
-                            </button>
-                        </div>
-
-                        <div className="mb-6">
-                            <h3 className="text-xl font-semibold mb-3">Participant companies</h3>
-
-                            {participants.map((prt, index) => (
-                                !prt._deleted && (
-                                    <div key={index} className="border rounded-lg p-4 mb-3 bg-gray-50">
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                            <input
-                                                type="text"
-                                                placeholder="Company name (optional)"
-                                                value={prt.participant_en}
-                                                onChange={(e) => updateParticipant(index, 'participant_en', e.target.value)}
-                                                className="border border-gray-300 rounded p-2 w-full"
-                                            />
-                                            <input
-                                                type="file"
-                                                accept="image/*"
-                                                onChange={(e) =>
-                                                    updateParticipant(index, 'participant_logo', e.target.files?.[0] || null)
-                                                }
-                                                className="border border-gray-300 rounded p-2 w-full"
-                                            />
-                                        </div>
-
-                                        {typeof prt.participant_logo === 'string' && prt.participant_logo && (
-                                            <div className="mt-2">
-                                                <Image
-                                                    src={`${process.env.NEXT_PUBLIC_API_URL}/${prt.participant_logo.replace(/\\/g, '/')}`}
-                                                    alt="company logo"
-                                                    width={100}
-                                                    height={100}
-                                                    className="rounded"
-                                                />
-                                            </div>
-                                        )}
-
-                                        <button
-                                            type="button"
-                                            onClick={() => removeParticipant(index)}
-                                            className="text-red-600 text-sm mt-2"
-                                        >
-                                            Remove
-                                        </button>
-                                    </div>
-                                )
-                            ))}
-
-                            <button
-                                type="button"
-                                onClick={addParticipant}
-                                className="bg-blue-600 text-white px-3 py-1 rounded"
-                            >
-                                + Add company
+                    {/* Organizers */}
+                    <section className="admin-card p-6">
+                        <div className="mb-5 flex items-center justify-between">
+                            <div>
+                                <h2 className="text-lg font-semibold text-gray-900">Organizers</h2>
+                                <p className="mt-1 text-sm text-gray-500">{activeOrganizers} organizer{activeOrganizers === 1 ? "" : "s"}</p>
+                            </div>
+                            <button type="button" onClick={addOrganizer} className="admin-btn-ghost">
+                                <PlusIcon className="size-4"/> Add
                             </button>
                         </div>
 
                         <div className="space-y-3">
-                            <label className="block font-semibold">Gallery:</label>
-                            {galleryImages.length > 0 ? (
-                                <div className="flex flex-wrap gap-3">
-                                    {galleryImages.map((img) => (
-                                        <div key={img.id} className="relative">
-                                            <Image
-                                                src={`${process.env.NEXT_PUBLIC_API_URL}/${img.image.replace(/\\/g, '/')}`}
-                                                alt="Gallery"
-                                                width={128}
-                                                height={96}
-                                                className="h-24 w-32 object-cover rounded border"
-                                            />
+                            {activeOrganizers === 0 && (
+                                <p className="rounded-lg border border-dashed border-gray-200 bg-gray-50 px-4 py-6 text-center text-sm text-gray-400">
+                                    No organizers yet.
+                                </p>
+                            )}
+                            {organizers.map((org, index) => (
+                                !org._deleted && (
+                                    <div key={index} className="rounded-lg border border-gray-200 bg-gray-50 p-4">
+                                        <div className="flex items-start gap-4">
+                                            {typeof org.organizer_logo === 'string' && org.organizer_logo ? (
+                                                <Image
+                                                    src={`${process.env.NEXT_PUBLIC_API_URL}/${org.organizer_logo.replace(/\\/g, '/')}`}
+                                                    alt="org logo"
+                                                    width={64}
+                                                    height={64}
+                                                    className="h-16 w-16 shrink-0 rounded-lg border border-gray-200 bg-white object-contain p-1"
+                                                />
+                                            ) : (
+                                                <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-lg border border-dashed border-gray-300 bg-white text-gray-300">
+                                                    <PhotoIcon className="size-6"/>
+                                                </div>
+                                            )}
+                                            <div className="grid flex-1 grid-cols-1 gap-3 sm:grid-cols-2">
+                                                <div>
+                                                    <span className="admin-label">Organizer</span>
+                                                    <input
+                                                        type="text"
+                                                        placeholder="Organizer name"
+                                                        value={org.organizer_en}
+                                                        onChange={(e) => updateOrganizer(index, 'organizer_en', e.target.value)}
+                                                        className="admin-input"
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <span className="admin-label">Logo</span>
+                                                    <input
+                                                        type="file"
+                                                        accept="image/*"
+                                                        onChange={(e) =>
+                                                            updateOrganizer(index, 'organizer_logo', e.target.files?.[0] || null)
+                                                        }
+                                                        className="admin-input file:mr-3 file:rounded-md file:border-0 file:bg-[#1268B3]/10 file:px-3 file:py-1 file:text-sm file:font-medium file:text-[#1268B3]"
+                                                    />
+                                                </div>
+                                            </div>
                                             <button
                                                 type="button"
-                                                onClick={() => deleteGalleryImage(img.id)}
-                                                className="absolute -top-2 -right-2 flex h-6 w-6 items-center justify-center rounded-full bg-red-600 text-sm text-white hover:bg-red-700"
-                                                aria-label="Delete image"
+                                                onClick={() => removeOrganizer(index)}
+                                                className="admin-btn-danger shrink-0"
+                                                title="Remove"
                                             >
-                                                ×
+                                                <TrashIcon className="size-4"/>
                                             </button>
                                         </div>
-                                    ))}
-                                </div>
-                            ) : (
-                                <p className="text-sm text-gray-500">No gallery images yet.</p>
-                            )}
-                            <GalleryPicker
-                                files={newGallery}
-                                onChange={setNewGallery}
-                                label="Add gallery images"
-                            />
+                                    </div>
+                                )
+                            ))}
+                        </div>
+                    </section>
+
+                    {/* Participants */}
+                    <section className="admin-card p-6">
+                        <div className="mb-5 flex items-center justify-between">
+                            <div>
+                                <h2 className="text-lg font-semibold text-gray-900">Participant companies</h2>
+                                <p className="mt-1 text-sm text-gray-500">{activeParticipants} compan{activeParticipants === 1 ? "y" : "ies"}</p>
+                            </div>
+                            <button type="button" onClick={addParticipant} className="admin-btn-ghost">
+                                <PlusIcon className="size-4"/> Add
+                            </button>
                         </div>
 
+                        <div className="space-y-3">
+                            {activeParticipants === 0 && (
+                                <p className="rounded-lg border border-dashed border-gray-200 bg-gray-50 px-4 py-6 text-center text-sm text-gray-400">
+                                    No participant companies yet.
+                                </p>
+                            )}
+                            {participants.map((prt, index) => (
+                                !prt._deleted && (
+                                    <div key={index} className="rounded-lg border border-gray-200 bg-gray-50 p-4">
+                                        <div className="flex items-start gap-4">
+                                            {typeof prt.participant_logo === 'string' && prt.participant_logo ? (
+                                                <Image
+                                                    src={`${process.env.NEXT_PUBLIC_API_URL}/${prt.participant_logo.replace(/\\/g, '/')}`}
+                                                    alt="company logo"
+                                                    width={64}
+                                                    height={64}
+                                                    className="h-16 w-16 shrink-0 rounded-lg border border-gray-200 bg-white object-contain p-1"
+                                                />
+                                            ) : (
+                                                <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-lg border border-dashed border-gray-300 bg-white text-gray-300">
+                                                    <PhotoIcon className="size-6"/>
+                                                </div>
+                                            )}
+                                            <div className="grid flex-1 grid-cols-1 gap-3 sm:grid-cols-2">
+                                                <div>
+                                                    <span className="admin-label">Company name</span>
+                                                    <input
+                                                        type="text"
+                                                        placeholder="Company name (optional)"
+                                                        value={prt.participant_en}
+                                                        onChange={(e) => updateParticipant(index, 'participant_en', e.target.value)}
+                                                        className="admin-input"
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <span className="admin-label">Logo</span>
+                                                    <input
+                                                        type="file"
+                                                        accept="image/*"
+                                                        onChange={(e) =>
+                                                            updateParticipant(index, 'participant_logo', e.target.files?.[0] || null)
+                                                        }
+                                                        className="admin-input file:mr-3 file:rounded-md file:border-0 file:bg-[#1268B3]/10 file:px-3 file:py-1 file:text-sm file:font-medium file:text-[#1268B3]"
+                                                    />
+                                                </div>
+                                            </div>
+                                            <button
+                                                type="button"
+                                                onClick={() => removeParticipant(index)}
+                                                className="admin-btn-danger shrink-0"
+                                                title="Remove"
+                                            >
+                                                <TrashIcon className="size-4"/>
+                                            </button>
+                                        </div>
+                                    </div>
+                                )
+                            ))}
+                        </div>
+                    </section>
+
+                    {/* Gallery */}
+                    <section className="admin-card p-6">
+                        <h2 className="mb-1 text-lg font-semibold text-gray-900">Gallery</h2>
+                        <p className="mb-5 text-sm text-gray-500">Additional images for this project.</p>
+
+                        {galleryImages.length > 0 ? (
+                            <div className="mb-4 flex flex-wrap gap-3">
+                                {galleryImages.map((img) => (
+                                    <div key={img.id} className="group relative">
+                                        <Image
+                                            src={`${process.env.NEXT_PUBLIC_API_URL}/${img.image.replace(/\\/g, '/')}`}
+                                            alt="Gallery"
+                                            width={128}
+                                            height={96}
+                                            className="h-24 w-32 rounded-lg border border-gray-200 object-cover"
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => deleteGalleryImage(img.id)}
+                                            className="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full bg-red-600 text-sm text-white shadow-sm transition-colors hover:bg-red-700"
+                                            aria-label="Delete image"
+                                        >
+                                            ×
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <p className="mb-4 text-sm text-gray-400">No gallery images yet.</p>
+                        )}
+                        <GalleryPicker
+                            files={newGallery}
+                            onChange={setNewGallery}
+                            label="Add gallery images"
+                        />
+                    </section>
+
+                    {/* Sticky actions */}
+                    <div className="flex justify-end gap-3">
+                        <Link href={`/admin/projects/view-project/${id}`} className="admin-btn-ghost">
+                            Cancel
+                        </Link>
                         <button
                             type="submit"
-                            className="bg text-white px-4 py-2 rounded flex items-center hover:bg-blue-700"
+                            disabled={saving}
+                            className="admin-btn disabled:cursor-not-allowed disabled:opacity-60"
                         >
-                            <DocumentIcon className="size-5 mr-2"/>
-                            Save
+                            <DocumentIcon className="size-5"/>
+                            {saving ? "Saving..." : "Save changes"}
                         </button>
-                    </form>
-                </div>
+                    </div>
+                </form>
             </div>
         </div>
     );

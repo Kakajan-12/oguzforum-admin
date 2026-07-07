@@ -1,11 +1,11 @@
 'use client';
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import axios, { AxiosError } from "axios";
 import Sidebar from "@/Components/Sidebar";
 import TokenTimer from "@/Components/TokenTimer";
 import Link from "next/link";
-import { PencilIcon, PlusCircleIcon, TrashIcon } from "@heroicons/react/16/solid";
+import { PencilSquareIcon, PlusIcon, TrashIcon, PhotoIcon } from "@heroicons/react/16/solid";
 import Image from "next/image";
 
 interface Partner {
@@ -51,6 +51,12 @@ const Partners = () => {
         fetchPartners();
     }, [router]);
 
+    // Newest first — highest (most recently added) id on top.
+    const sorted = useMemo(
+        () => [...partners].sort((a, b) => b.id - a.id),
+        [partners]
+    );
+
     const handleDelete = async () => {
         if (!selectedPartnerId) return;
         setIsDeleting(true);
@@ -74,72 +80,103 @@ const Partners = () => {
     };
 
     if (error) {
-        return <div className="p-4 text-red-600">{error}</div>;
+        return (
+            <div className="admin-page flex">
+                <Sidebar />
+                <div className="ml-64 flex-1 p-8 lg:p-10 text-red-600">{error}</div>
+            </div>
+        );
     }
 
     return (
-        <div className="flex bg-gray-200 min-h-screen">
+        <div className="admin-page flex">
             <Sidebar />
-            <div className="flex-1 p-10 ml-62">
+            <div className="ml-64 flex-1 p-8 lg:p-10">
                 <TokenTimer />
-                <div className="mt-8">
-                    <div className="w-full flex justify-between items-center">
-                        <h2 className="text-2xl font-bold mb-4">Partners</h2>
-                        <Link
-                            href="/admin/partners/add-partner"
-                            className="bg text-white py-2 px-6 rounded-md flex items-center hover:bg-blue-700"
-                        >
-                            <PlusCircleIcon className="size-6 mr-2" />
-                            Add
-                        </Link>
-                    </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-6">
-                        {partners.length === 0 ? (
-                            <div className="col-span-full text-center text-gray-600">No data</div>
-                        ) : (
-                            partners.map((partner) => (
-                                <div key={partner.id} className="border rounded-md bg-white overflow-hidden shadow">
-                                    <Image
-                                        src={`${process.env.NEXT_PUBLIC_API_URL}/${partner.logo.replace(/\\/g, "/")}`}
-                                        alt={`Partner ${partner.id}`}
-                                        width={300}
-                                        height={200}
-                                        className="w-full h-auto object-contain"
-                                    />
-                                    <div className="flex justify-between items-center p-4 border-t">
+                <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                        <h1 className="text-2xl font-bold text-gray-900">Partners</h1>
+                        <p className="mt-1 text-sm text-gray-500">
+                            {sorted.length} partner{sorted.length === 1 ? "" : "s"}
+                        </p>
+                    </div>
+                    <Link href="/admin/partners/add-partner" className="admin-btn whitespace-nowrap">
+                        <PlusIcon className="size-5" /> Add
+                    </Link>
+                </div>
+
+                {sorted.length === 0 ? (
+                    <div className="admin-card flex flex-col items-center justify-center px-4 py-16 text-center">
+                        <PhotoIcon className="mb-2 size-10 text-gray-300" />
+                        <p className="text-sm text-gray-400">No partners yet.</p>
+                    </div>
+                ) : (
+                    <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+                        {sorted.map((partner) => (
+                            <div key={partner.id} className="admin-card group flex flex-col overflow-hidden">
+                                <div className="flex h-40 items-center justify-center bg-gray-50 p-6">
+                                    {partner.logo ? (
+                                        <Image
+                                            src={`${process.env.NEXT_PUBLIC_API_URL}/${partner.logo.replace(/\\/g, "/")}`}
+                                            alt={`Partner ${partner.id}`}
+                                            width={240}
+                                            height={140}
+                                            className="max-h-full w-auto object-contain"
+                                        />
+                                    ) : (
+                                        <div className="flex flex-col items-center text-gray-300">
+                                            <PhotoIcon className="size-10" />
+                                            <span className="mt-1 text-xs font-medium">No logo</span>
+                                        </div>
+                                    )}
+                                </div>
+                                <div className="flex items-center justify-between border-t border-gray-100 px-4 py-3">
+                                    <span className="font-mono text-xs font-medium text-gray-400">#{partner.id}</span>
+                                    <div className="flex items-center gap-2">
                                         <Link
                                             href={`/admin/partners/edit-partner/${partner.id}`}
-                                            className="flex items-center text-blue-600 hover:underline"
+                                            className="admin-btn-ghost"
+                                            title="Edit"
                                         >
-                                            <PencilIcon className="w-5 h-5 mr-2" />
-                                            Edit
+                                            <PencilSquareIcon className="size-4" />
                                         </Link>
                                         <button
                                             onClick={() => {
                                                 setSelectedPartnerId(partner.id);
                                                 setShowModal(true);
                                             }}
-                                            className="flex items-center text-red-600 hover:underline"
+                                            className="admin-btn-danger"
+                                            title="Delete"
                                         >
-                                            <TrashIcon className="w-5 h-5 mr-2" />
-                                            Delete
+                                            <TrashIcon className="size-4" />
                                         </button>
                                     </div>
                                 </div>
-                            ))
-                        )}
+                            </div>
+                        ))}
                     </div>
-                </div>
+                )}
 
                 {showModal && (
-                    <div className="fixed inset-0 flex items-center justify-center bg-opacity-50 z-50">
-                        <div className="bg-white p-6 rounded shadow-md w-full max-w-md">
-                            <h2 className="text-xl font-semibold mb-4">Удалить партнёра</h2>
-                            <p className="mb-6">Вы уверены, что хотите удалить этого партнёра?</p>
-                            <div className="flex justify-end space-x-4">
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                        <div
+                            className="fixed inset-0 bg-black/40"
+                            onClick={() => !isDeleting && setShowModal(false)}
+                        />
+                        <div className="relative w-full max-w-md rounded-xl bg-white p-6 shadow-xl">
+                            <div className="mb-4 flex items-center gap-3">
+                                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-red-100 text-red-600">
+                                    <TrashIcon className="size-5" />
+                                </div>
+                                <h2 className="text-lg font-bold text-gray-900">Delete partner</h2>
+                            </div>
+                            <p className="mb-6 text-sm text-gray-500">
+                                Are you sure you want to delete this partner? This action cannot be undone.
+                            </p>
+                            <div className="flex justify-end gap-3">
                                 <button
-                                    className="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400"
+                                    className="admin-btn-ghost"
                                     onClick={() => {
                                         setShowModal(false);
                                         setSelectedPartnerId(null);
@@ -149,7 +186,7 @@ const Partners = () => {
                                     Cancel
                                 </button>
                                 <button
-                                    className="px-4 py-2 rounded bg-red-500 text-white hover:bg-red-600"
+                                    className="inline-flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-60"
                                     onClick={handleDelete}
                                     disabled={isDeleting}
                                 >
