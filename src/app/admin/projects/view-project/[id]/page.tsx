@@ -46,6 +46,7 @@ interface Project {
     image: string;
     logo: string;
     en: string;
+    short_en?: string;
     text_en: string;
     location_en: string;
     type_en: string;
@@ -153,7 +154,14 @@ const ViewProject = () => {
                         >
                             <ArrowLeftIcon className="size-4"/> Back to projects
                         </Link>
-                        <h1 className="text-2xl font-bold text-gray-900">{stripHtml(data.en) || "Project"}</h1>
+                        <h1 className="text-2xl font-bold text-gray-900">
+                            {stripHtml(data.en) || "Project"}
+                            {data.short_en && (
+                                <span className="ml-2 align-middle rounded-md bg-[#1268B3]/10 px-2 py-0.5 text-sm font-semibold text-[#1268B3]">
+                                    {data.short_en}
+                                </span>
+                            )}
+                        </h1>
                         <div className="mt-2 flex flex-wrap items-center gap-2 text-sm text-gray-500">
                             {data.type_en && (
                                 <span className="inline-flex items-center gap-1 rounded-full bg-[#1268B3]/10 px-2.5 py-0.5 text-xs font-medium text-[#1268B3]">

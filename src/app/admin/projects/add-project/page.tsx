@@ -23,6 +23,7 @@ const AddProject = () => {
     const [logo, setLogo] = useState<File | null>(null);
     const [gallery, setGallery] = useState<File[]>([]);
     const [en, setTitleEn] = useState('');
+    const [shortEn, setShortEn] = useState('');
     const [text_en, setTextEn] = useState('');
     const [date, setDate] = useState('');
     const [endDate, setEndDate] = useState('');
@@ -122,6 +123,7 @@ const AddProject = () => {
         if (image) formData.append('image', image);
         if (logo) formData.append('logo', logo);
         formData.append('en', en);
+        formData.append('short_en', shortEn);
         formData.append('text_en', text_en);
         formData.append('date', date);
         formData.append('end_date', endDate);
@@ -380,6 +382,19 @@ const AddProject = () => {
 
                         {isClient && (
                             <div className="bg-base-100 border border-gray-200 rounded-md p-6">
+                                <div className="mb-4">
+                                    <label className="block text-gray-700 font-semibold mb-2">
+                                        Short name <span className="font-normal text-gray-400">(abbreviation, e.g. ITTC)</span>:
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={shortEn}
+                                        onChange={(e) => setShortEn(e.target.value)}
+                                        maxLength={50}
+                                        placeholder="ITTC"
+                                        className="border border-gray-300 rounded p-2 w-full focus:border-blue-500 focus:ring focus:ring-blue-200 transition duration-150"
+                                    />
+                                </div>
                                 <div className="mb-4">
                                     <label className="block text-gray-700 font-semibold mb-2">Title:</label>
                                     <TipTap content={en} onChange={setTitleEn} />

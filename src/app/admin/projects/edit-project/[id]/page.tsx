@@ -37,6 +37,7 @@ const EditProject = () => {
         image: '',
         logo: '',
         en: '',
+        short_en: '',
         text_en: '',
         date:"",
         end_date:"",
@@ -214,6 +215,7 @@ const EditProject = () => {
             if (logoFile) formData.append("logo", logoFile);
 
             formData.append("en", data.en);
+            formData.append("short_en", data.short_en || "");
             formData.append("text_en", data.text_en);
             formData.append("date", data.date);
             formData.append("end_date", data.end_date);
@@ -570,6 +572,17 @@ const EditProject = () => {
                         <p className="mb-5 text-sm text-gray-500">Title and description shown on the event page.</p>
 
                         <div className="space-y-5">
+                            <div>
+                                <span className="admin-label">Short name <span className="font-normal text-gray-400">(abbreviation, e.g. ITTC)</span></span>
+                                <input
+                                    type="text"
+                                    value={data.short_en || ''}
+                                    onChange={(e) => setData((prev) => ({ ...prev, short_en: e.target.value }))}
+                                    maxLength={50}
+                                    placeholder="ITTC"
+                                    className="admin-input"
+                                />
+                            </div>
                             <div>
                                 <span className="admin-label">Title</span>
                                 <TipTap
